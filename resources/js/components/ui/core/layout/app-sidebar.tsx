@@ -11,11 +11,13 @@ import {
   LayoutDashboardIcon,
   LifeBuoy,
   Map,
+  PhoneCall,
   PieChart,
   Send,
   Settings2,
   SquareTerminal,
   Store,
+  UsersRound,
 } from "lucide-react"
 
 
@@ -62,12 +64,18 @@ import { usePage } from "@inertiajs/react";
         isActive: false,
       },
       {
-        title: "Mess",
-        url: "/dashboard/paket",
-        icon: Store,
+        title: "About",
+        url: "/dashboard/about",
+        icon: UsersRound,
         isActive: false,
       },
-   
+      {
+        title: "Contact",
+        url: "/dashboard/contact",
+        icon: PhoneCall,
+        isActive: false,
+      },
+
     ],
     // projects: [
     //   {
@@ -90,7 +98,7 @@ import { usePage } from "@inertiajs/react";
     ],
   }
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  
+
   const { auth } = usePage<SharedData>().props;
   const isMob = useIsMobile()
 
@@ -105,10 +113,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavSecondary
-          isMobile={isMob} 
-          items={data.navSecondary} 
+          isMobile={isMob}
+          items={data.navSecondary}
           className="mt-auto"
-        
+
         />
       </SidebarContent>
       <SidebarFooter>

@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Paket;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-
-class PaketController extends Controller
+class AboutController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-    return Inertia::render('dashboard/paket');
+        return Inertia::render('dashboard/about', [
+            "about" => "hello world"
+        ]);
     }
 
     /**
@@ -35,7 +35,7 @@ class PaketController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Paket $paket)
+    public function show(string $id)
     {
         //
     }
@@ -43,7 +43,7 @@ class PaketController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Paket $paket)
+    public function edit(string $id)
     {
         //
     }
@@ -51,7 +51,7 @@ class PaketController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Paket $paket)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -59,7 +59,7 @@ class PaketController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Paket $paket)
+    public function destroy(string $id)
     {
         //
     }

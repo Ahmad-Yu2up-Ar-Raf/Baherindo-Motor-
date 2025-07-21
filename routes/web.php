@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\OverviewController;
-use App\Http\Controllers\PaketController;
+
+use App\Http\Controllers\AboutController;
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -15,10 +17,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
  Route::prefix('dashboard')->name('dashboard.')->group(function () {
         Route::resource('/', OverviewController::class);
-        
+
         // Elections routes
-        Route::resource('paket', PaketController::class);
-       
+        Route::resource('about', AboutController::class);
+        Route::resource('contact', ContactController::class);
+
     });
 
 
