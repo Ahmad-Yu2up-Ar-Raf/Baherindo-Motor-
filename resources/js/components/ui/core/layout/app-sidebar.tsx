@@ -6,6 +6,7 @@ import {
   BookOpen,
   Bot,
   Command,
+  DoorOpen,
   Frame,
   GalleryVerticalEnd,
   LayoutDashboardIcon,
@@ -67,6 +68,18 @@ import { usePage } from "@inertiajs/react";
         title: "About",
         url: "/dashboard/about",
         icon: UsersRound,
+        isActive: false,
+      },
+      {
+        title: "Siswa",
+        url: "/dashboard/siswa",
+        icon: UsersRound,
+        isActive: false,
+      },
+      {
+        title: "Kelas",
+        url: "/dashboard/kelas",
+        icon: DoorOpen,
         isActive: false,
       },
       {
