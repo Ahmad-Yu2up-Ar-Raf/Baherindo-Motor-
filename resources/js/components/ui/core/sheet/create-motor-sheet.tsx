@@ -17,10 +17,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/fragments/sheet";
-import { TaskForm as CalonForm } from "../forms/siswa-form";
-
-
-import { siswaSchema as calonSchemaForm , type SiswaSchema as CalonSchemaForm } from "@/lib/validations/siswa";
+import { TaskForm } from "../forms/motor-form";
+import { motorSchema , type MotorSchema } from "@/lib/validations";
 
 
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -35,14 +33,15 @@ import {
   DrawerTrigger,
 } from "@/components/ui/fragments/drawer";
 import { router } from "@inertiajs/react";
+import { FileUploadRef } from "../../fragments/file-uploud";
 
-import { KelasSchema as Elections } from "@/lib/validations/siswa";
 
-export function CreateTaskSheet({ elections }: { elections: Elections[] }) {
+
+export function CreateTaskSheet() {
   const [open, setOpen] = React.useState(false);
   const [isPending, startTransition] = React.useTransition();
   const [loading, setLoading] = React.useState(false);  
-
+  const fileUploadRef = React.useRef<FileUploadRef>(null)
 
        const isDesktop = useIsMobile();
 
@@ -50,13 +49,15 @@ export function CreateTaskSheet({ elections }: { elections: Elections[] }) {
 
  
 
-  const form  =   useForm<CalonSchemaForm>({
+  const form  =   useForm<MotorSchema>({
     mode: "onSubmit", 
     defaultValues: {
      name: "",
-    
+       harga: 0,
+       files: [],
+       plat_nomor: ""
       },
-    resolver: zodResolver(calonSchemaForm),
+    resolver: zodResolver(motorSchema),
   }) 
 
 
@@ -64,25 +65,33 @@ export function CreateTaskSheet({ elections }: { elections: Elections[] }) {
 
   
 
-function onSubmit(input: CalonSchemaForm) {
+function onSubmit(input: MotorSchema) {
+    toast.loading("motor creating....", {
+      id: "create-motor"
+    });
   startTransition( () => {
     setLoading(true);
 
-
+console.log(input)
     
-    router.post(route(`dashboard.siswa.store`), input, { 
+    router.post(route(`dashboard.motor.store`), input, { 
       preserveScroll: true,
       preserveState: true,
    
       onSuccess: () => {
         form.reset();
         setOpen(false);
-        toast.success("Student created");
+        toast.success("motor created", {
+               id: "create-motor"
+             });
         setLoading(false);
       },
       onError: (error) => {
         console.error("Submit error:", error);
-        toast.error(`Error: ${Object.values(error).join(', ')}`);
+    toast.error(`Error: ${Object.values(error).join(', ')}`, 
+        {
+          id: "create-motor"
+        });
         setLoading(false);
            form.reset();
       }
@@ -105,12 +114,12 @@ function onSubmit(input: CalonSchemaForm) {
       </SheetTrigger>
       <SheetContent className="flex flex-col gap-6 overflow-y-scroll ">
         <SheetHeader className="text-left sm:px-6 space-y-1 bg-background z-30  sticky top-0   p-4 border-b  ">
-          <SheetTitle className=" text-lg">Add New <Button type="button"   variant={"outline"} className=" ml-2  px-2.5 text-base capitalize">Siswa</Button> </SheetTitle>
+          <SheetTitle className=" text-lg">Add New <Button type="button"   variant={"outline"} className=" ml-2  px-2.5 text-base capitalize">Motor</Button> </SheetTitle>
           <SheetDescription className=" sr-only">
             Fill in the details below to create a new task
           </SheetDescription>
         </SheetHeader>
-        <CalonForm kelas={elections} isPending={loading} form={form}  onSubmit={onSubmit}>
+        <TaskForm isPending={loading} form={form} fileUploadRef={fileUploadRef}  onSubmit={onSubmit}>
           <SheetFooter className="gap-3 px-3 py-4 w-full flex-row justify-end  flex  border-t sm:space-x-0">
             
 
@@ -126,8 +135,8 @@ function onSubmit(input: CalonSchemaForm) {
             </Button>
             
           </SheetFooter>
-        </CalonForm>
-      </SheetContent>
+        </TaskForm>
+      </SheetContent> 
     </Sheet>
   );
 }
@@ -145,7 +154,7 @@ return(
       </DrawerTrigger>
       <DrawerContent className="flex flex-col  ">
         <DrawerHeader className="text-left sm:px-6 space-y-1 bg-background    p-4 border-b  ">
-        <DrawerTitle className=" text-xl">Add New <Button type="button"   variant={"outline"} className=" ml-2  px-2.5 text-base">Siswa</Button> </DrawerTitle>
+        <DrawerTitle className=" text-xl">Add New <Button type="button"   variant={"outline"} className=" ml-2  px-2.5 text-base">motor</Button> </DrawerTitle>
 
         
               <DrawerDescription className=" text-sm">
@@ -155,7 +164,7 @@ return(
         </DrawerHeader>
 
 
-         <CalonForm  kelas={elections}   isPending={loading} form={form}  onSubmit={onSubmit}>
+         <TaskForm   isPending={loading} form={form}  fileUploadRef={fileUploadRef}  onSubmit={onSubmit}>
 
         <DrawerFooter className="gap-3 px-3 py-4 w-full flex-row justify-end  flex  border-t sm:space-x-0">
              <DrawerClose disabled={loading} asChild onClick={() => form.reset()}>
@@ -169,7 +178,7 @@ return(
                             Add
                           </Button>
         </DrawerFooter>
-          </CalonForm>
+          </TaskForm>
 
       </DrawerContent>
     </Drawer>

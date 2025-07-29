@@ -28,7 +28,7 @@ export function DataTableToolbar<TData>({
   table,
 //   option,
   filters,
-    getColums = "name",
+    // getColums = "name",
   createComponent
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0

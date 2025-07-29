@@ -4,14 +4,16 @@ import { ColumnDef } from "@tanstack/react-table"
 
 
 import { Checkbox } from "@/components/ui/fragments/checkbox"
-
-import { SiswaSchema } from "@/lib/validations/siswa"
 import { DataTableColumnHeader } from "./data-table-column-header"
 import { cn } from "@/lib/utils"
+
+import { MotorSchema } from "@/lib/validations"
 // import { DataTableRowActions } from "./data-table-row-actions"
 
 
-export const columns: ColumnDef<SiswaSchema>[] = [
+
+
+export const columns: ColumnDef<MotorSchema>[] = [
  {
     id: "select",
     header: ({ table }) => (
@@ -40,25 +42,26 @@ export const columns: ColumnDef<SiswaSchema>[] = [
   },
   
   {
-    accessorKey: "name",
+    accessorKey: "Name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Name" />
     ),
-    cell: ({ row }) => (
+    cell: ({ row }) => {
+      return(
       <div className="flex gap-2">
         <span className=" truncate font-medium">
-          {row.getValue("name")}
+          {row.original.name}
         </span>
       </div>
-    ),
+    )},
   },
   {
-    accessorKey: "Kelas",
+    accessorKey: "Harga",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Kelas" />
+      <DataTableColumnHeader column={column} title="Harga" />
     ),
     cell: ({ row }) => (
-        <div className={cn("25  ", !row.getValue("kelas") ? 'text-muted-foreground ' : 'font-mono!' )}>{row.getValue("kelas") ? row.getValue("kelas") : 'N/A'}</div>
+        <div className={cn("25 font-mono!  " )}>{row.original.harga}</div>
     ),
   },
 //   {

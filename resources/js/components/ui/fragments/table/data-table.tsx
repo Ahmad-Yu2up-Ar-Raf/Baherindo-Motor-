@@ -32,7 +32,7 @@ import { DataTableToolbar } from "./data-table-toolbar"
 import { Filters, Filters as filters } from "@/lib/schema"
 
 
-import { KelasSchema } from "@/lib/validations/siswa"
+// import { KelasSchema } from "@/lib/validations"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -44,8 +44,8 @@ interface DataTableProps<TData, TValue> {
     total: number;
   };
   filters: Filters;
-  option?: any
-  kelas?: KelasSchema[]
+  // option?: any
+  // kelas?: KelasSchema[]
     nas?: string
     
       createComponent: React.ReactNode
@@ -60,7 +60,7 @@ export function DataTable<TData, TValue>({
 nas,
 
 createComponent,
-kelas
+// kelas
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -82,9 +82,9 @@ kelas
       columnFilters,
       pagination,
     },
-   meta: {
-      kelas: kelas
-    } as TableMeta,
+  //  meta: {
+  //     kelas: kelas
+  //   } as TableMeta,
     manualPagination: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,

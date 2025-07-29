@@ -2,9 +2,10 @@
 
 use App\Http\Controllers\OverviewController;
 
-use App\Http\Controllers\AboutController;
+// use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\KelasController;
+use App\Http\Controllers\MotorController;
 use App\Http\Controllers\SiswaController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -21,11 +22,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('/', OverviewController::class);
 
         // Elections routes
-        Route::resource('about', AboutController::class);
-        Route::resource('contact', ContactController::class);
-        Route::resource('kelas', KelasController::class);
-        Route::resource('siswa', SiswaController::class);
+        // Route::resource('about', AboutController::class);
+        Route::resource('motor', MotorController::class);
 
+   
     });
 
 

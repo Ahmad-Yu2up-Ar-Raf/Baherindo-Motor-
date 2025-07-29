@@ -5,7 +5,11 @@ import React  from 'react';
 
 export function Breadcrumbs() {
   const paths = usePage().url
-  const pathNames = paths.split('/').filter(path => path)
+  const pathNamesFilter = paths.split('?').filter(path => path)
+
+
+
+  const pathNames = pathNamesFilter[0].split('/').filter(path => path)
 
     return (
         <>
