@@ -27,6 +27,10 @@ class Motor extends Model
  'deskripsi' ,
  'files' ,
  'merek',
+ 'kategori',
+ 'odometer',
+ 'tahun',
+ 'url',
      ];
  
  
@@ -35,11 +39,14 @@ class Motor extends Model
      [  
          'name' => 'string',
          'harga' => 'decimal:2',
+         'odometer' => 'decimal:1',
          'warna' => 'string',
+         'tahun' => 'string',
          'plat_nomor' => 'string',
     'dp_minimum' => 'decimal:2',
     'masa_berlaku_pajak' => 'datetime',
-   'deskripsi' => 'text',
+   'deskripsi' => 'string',
+   'url' => 'string',
    'files' => 'array',
    'merek' => Merek::class,
    'kategori' => Kategori::class,
@@ -55,5 +62,20 @@ class Motor extends Model
  
  
 
+   public function getFormattedPriceAttribute()
+    {
+        return 'Rp ' . number_format($this->harga, 0, ',', '.');
+    }
 
+    /**
+     * Method untuk format DP minimum
+     */
+    public function getFormattedDpAttribute()
+    {
+        if (!$this->dp_minimum) {
+            return null;
+        }
+        
+        return 'Rp ' . number_format($this->dp_minimum, 0, ',', '.');
+    }
 }

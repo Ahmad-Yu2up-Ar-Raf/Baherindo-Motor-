@@ -54,3 +54,12 @@ export interface sidebarType {  items: {
     }[]
   }[]
 }
+
+
+
+export interface Filters {
+    search: string;
+    merek?: string;
+    kategori?: string;
+        [key: string]: unknown;
+  };

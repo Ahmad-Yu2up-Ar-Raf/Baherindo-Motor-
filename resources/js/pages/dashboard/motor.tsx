@@ -1,7 +1,7 @@
 import { CreateTaskSheet } from "@/components/ui/core/sheet/create-motor-sheet";
 import { DataTable } from "@/components/ui/fragments/table/data-table";
 import { columns } from "@/components/ui/fragments/table/motor-columns";
-import { Filters } from "@/lib/schema";
+import { Filters } from "@/types/index";
 import { MotorSchema } from "@/lib/validations";
 
 interface PaginatedData {

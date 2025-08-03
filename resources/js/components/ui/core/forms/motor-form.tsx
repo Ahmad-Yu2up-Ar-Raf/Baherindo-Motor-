@@ -36,6 +36,7 @@ interface TaskFormProps<T extends FieldValues, >
   form: UseFormReturn<T>;
   onSubmit: (data: T) => void;
   isPending: boolean;
+  initialFiles?: FileWithPreview[] | undefined
   currentKelas?: MotorSchema;
   fileUploadRef: React.RefObject<FileUploadRef | null>
 }
@@ -57,19 +58,23 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/fragments/select"
+import { FileWithPreview } from "@/hooks/use-file-upload";
+import KilometerInput from "../../fragments/kilometer-input";
 export function TaskForm<T extends FieldValues, >({
   form,
   onSubmit,
    fileUploadRef,
   children,
-  currentKelas,
+  initialFiles,
   isPending,
 }: TaskFormProps<T>) {
 
 
   const [isOpen, setIsOpen] = React.useState(false)
 
-   
+  //  console.log("initialFiles", initialFiles);
+  const currentYear = new Date().getFullYear();
+      const years = Array.from({ length: 10 }, (_, i) => currentYear - 5 + i);
 
   return (
     <Form {...form}>
@@ -116,15 +121,17 @@ export function TaskForm<T extends FieldValues, >({
           name={"files" as FieldPath<T>}
           render={( { field}) => (
             <FormItem className=" ">
-              <FormLabel className="">Files</FormLabel>
+              <FormLabel className="">Gambar</FormLabel>
               <FormControl>
                 <FormFileUpload 
                   {...field}
+                  initialFiles={initialFiles}
                   ref={fileUploadRef}
                   control={form.control}
                   name="files"
                   maxSizeMB={5}
                   maxFiles={6}
+               
                   isLoading={isPending}
                   isPending={isPending}
                 />
@@ -157,6 +164,40 @@ export function TaskForm<T extends FieldValues, >({
               )}
             />
 
+<FormField
+          control={form.control}
+          name={"tahun" as FieldPath<T>}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tahun Keluaran</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select year" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {years.map((item,i ) => (
+
+                  <SelectItem key={i} value={item.toString()}>{item}</SelectItem>
+                  ))}
+                  
+                </SelectContent>
+              </Select>
+                <FormDescription className=" sr-only">You can manage email addresses in your email settings.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+    <KilometerInput
+  form={form}
+  disable={isPending}
+  label="Odometer"
+  name="odometer"
+  placeholder="0 km"
+  description="Jarak tempuh kendaraan dalam kilometer"
+/>
 
           </section>
           
@@ -167,69 +208,7 @@ export function TaskForm<T extends FieldValues, >({
             </header>
             
             <section className="space-y-10">
-            {/* <FormField
-          control={form.control}
-          name={"kategori" as FieldPath<T>}
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Kategori</FormLabel>
-              <Popover open={isOpen} onOpenChange={setIsOpen}>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className={cn(
-                        "w-full justify-between",
-                        !field.value && "text-muted-foreground"
-                      )}
-                      
-                    >
-                      {field.value
-                        ? KATEGORI_MOTOR.find(
-                            (language) => language.value === field.value
-                          )?.label
-                        : "Select kategori"}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
-                  <Command>
-                    <CommandInput placeholder="Search kategori..." />
-                    <CommandList>
-                      <CommandEmpty>No kategori found.</CommandEmpty>
-                      <CommandGroup>
-                        {KATEGORI_MOTOR.map((language) => (
-                          <CommandItem
-                            value={language.label}
-                            key={language.value}
-                            onSelect={() => {
-                              form.setValue("merek" as FieldPath<T>, language.value as any);
-                              setIsOpen(false);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                language.value === field.value
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                            {language.label}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              <FormDescription className=" sr-only">This is the language that will be used in the dashboard.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
+         
 
             <FormField
                 control={form.control}
@@ -257,10 +236,10 @@ export function TaskForm<T extends FieldValues, >({
           disable={isPending}
           label="DP Minimum"
           name="dp_minimum"
-          placeholder="Dp Motor"
+          placeholder="dp motor"
         />
 
-     
+   
 
 <FormField
       control={form.control}
@@ -292,7 +271,7 @@ export function TaskForm<T extends FieldValues, >({
                 mode="single"
                 selected={field.value}
                 onSelect={field.onChange}
-               
+               captionLayout="dropdown"
               />
             </PopoverContent>
           </Popover>
@@ -301,6 +280,7 @@ export function TaskForm<T extends FieldValues, >({
         </FormItem>
       )}
     />
+
          
          <FormField
               control={form.control}
@@ -311,7 +291,7 @@ export function TaskForm<T extends FieldValues, >({
                   <FormControl>
                     <Input 
                 
-                      placeholder="motor name"
+                      placeholder="motor warna"
                       type="text"
                       disabled={isPending}
                       {...field}
@@ -324,6 +304,7 @@ export function TaskForm<T extends FieldValues, >({
             />
 
 
+
 <FormField
           control={form.control}
           name={"kategori" as FieldPath<T>}
@@ -333,13 +314,13 @@ export function TaskForm<T extends FieldValues, >({
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a verified email to display" />
+                    <SelectValue placeholder="Select kategori" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   {KATEGORI_MOTOR.map((item,i ) => (
 
-                  <SelectItem value={item.value}>{item.label}</SelectItem>
+                  <SelectItem key={i} value={item.value}>{item.label}</SelectItem>
                   ))}
                   
                 </SelectContent>
@@ -349,6 +330,8 @@ export function TaskForm<T extends FieldValues, >({
             </FormItem>
           )}
         />
+
+
 
 
 <FormField

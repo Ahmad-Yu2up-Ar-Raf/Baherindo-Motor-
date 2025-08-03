@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('motors', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('name');
-            $table->foreignId('kelas_id')->nullable();
+             $table->string('name', 255)->unique()->nullable();
+     
         });
     }
 

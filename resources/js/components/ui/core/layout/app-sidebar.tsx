@@ -3,6 +3,7 @@
 import * as React from "react"
 import {
   AudioWaveform,
+  Bike,
   BookOpen,
   Bot,
   Car,
@@ -86,7 +87,7 @@ import { usePage } from "@inertiajs/react";
       {
         title: "Motor",
         url: "/dashboard/motor",
-        icon: Car,
+        icon: Bike,
         isActive: false,
       },
 

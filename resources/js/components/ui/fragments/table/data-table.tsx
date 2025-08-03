@@ -29,7 +29,7 @@ import {
 
 import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
-import { Filters, Filters as filters } from "@/lib/schema"
+import { Filters, Filters as filters } from "@/types/index"
 
 
 // import { KelasSchema } from "@/lib/validations"
@@ -53,7 +53,7 @@ interface DataTableProps<TData, TValue> {
 
 export function DataTable<TData, TValue>({
   columns,
-//   option,
+  // option,
   data,
   pagination: serverPagination,
   filters,
@@ -101,7 +101,8 @@ createComponent,
           page: newPagination.pageIndex + 1,
           perPage: newPagination.pageSize,
           search: filters?.search,
-          filter: filters?.filter
+          merek: filters?.merek,
+          kategori: filters?.kategori,
         },
         { 
           preserveState: true,
@@ -121,7 +122,7 @@ createComponent,
   return (
     <div className="flex flex-col gap-4">
       <DataTableToolbar filters={filters as filters} getColums={nas} createComponent={createComponent}
-    //    option={option} 
+   
        table={table} />
       <div className="rounded-md border">
         <Table>

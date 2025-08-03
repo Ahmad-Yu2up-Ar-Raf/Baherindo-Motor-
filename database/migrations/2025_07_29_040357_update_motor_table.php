@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::table('motors', function (Blueprint $table) {
             $table->dateTime('masa_berlaku_pajak')->nullable();
-            $table->string('plat_nomor' , 5)->unique()->nullable();
-            $table->string('warna' , 5)->nullable();
-            $table->text('deskripsi' , 5)->nullable();
+              $table->string('plat_nomor' , 255)->unique();
+           $table->string('warna' , 255)->nullable();
+                 $table->text('deskripsi' )->nullable();
             $table->decimal('dp_minimum', 15, 2)->nullable();
             $table->json('files')->nullable();
         });

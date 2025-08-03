@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('motors', function (Blueprint $table) {
-            $table->foreignId('kelas_id')->nullable();
+       
         });
     }
 };

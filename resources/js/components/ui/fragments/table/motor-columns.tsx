@@ -7,12 +7,21 @@ import { Checkbox } from "@/components/ui/fragments/checkbox"
 import { DataTableColumnHeader } from "./data-table-column-header"
 import { cn } from "@/lib/utils"
 
-import { MotorSchema } from "@/lib/validations"
+import { KategoriType, MerekType, MotorSchema } from "@/lib/validations"
+import { formatDate } from "date-fns"
+import { Bike, CalendarIcon, Settings } from "lucide-react"
+import { Badge } from "../badge"
+import { getKategoriIcon, getMerekIcon } from "@/utils/motorcyle-utils"
+import { formatIDR } from "@/hooks/use-money-format"
+import { DataTableRowActions } from "../../core/table/data-table-row-action-motor"
+import {  useKilometer } from "@/hooks/useKilometer"
+
+
 // import { DataTableRowActions } from "./data-table-row-actions"
 
 
 
-
+  
 export const columns: ColumnDef<MotorSchema>[] = [
  {
     id: "select",
@@ -42,7 +51,7 @@ export const columns: ColumnDef<MotorSchema>[] = [
   },
   
   {
-    accessorKey: "Name",
+    accessorKey: "name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Name" />
     ),
@@ -54,162 +63,241 @@ export const columns: ColumnDef<MotorSchema>[] = [
         </span>
       </div>
     )},
+        meta: {
+        label: "Name",
+        placeholder: "Search name...",
+        variant: "text",
+
+      },
+      enableColumnFilter: true,
   },
   {
-    accessorKey: "Harga",
+    accessorKey: "harga",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Harga" />
     ),
-    cell: ({ row }) => (
-        <div className={cn("25 font-mono!  " )}>{row.original.harga}</div>
-    ),
+    cell: ({ row }) => {
+   
+      return(
+             <div className=" 40 ">
+
+       <Badge variant="outline" className="py-1 [&>svg]:size-3.5 font-mono">
+        
+          
+            <span className="capitalize   font-mono">{formatIDR(row.original.harga)}</span>
+     
+          </Badge>
+          </div>
+    )
+  }
   },
-//   {
-//     accessorKey: "status",
-//     header: ({ column }) => (
-//       <DataTableColumnHeader column={column} title="Status" />
-//     ),
-//     cell: ({ row }) => {
+      {
+      id: "tahun",
+      accessorKey: "tahun",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="tahun" />
+      ),
+      cell: ({ row }) => <div  className={cn(" ", !row.getValue("tahun") ? 'text-muted-foreground ' : 'font-mono!' )}>{row.getValue("tahun") ? row.getValue("tahun") : 'N/A'}</div>,
+          meta: {
+        label: "tahun",
+     
+        variant: "text",
+        // icon: Text,
+      },
+  enableSorting: false,
+  enableHiding: true,
+  enableColumnFilter: false,
+    },
+      {
+      id: "odometer",
+      accessorKey: "odometer",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="odometer" />
+      ),
+      cell: ({ row }) => {
+        const odometer = row.original.odometer;
+      if (!odometer) {
+          return (
+            <div className="text-muted-foreground 32">
+          N/A
+            </div>
+          );
+        }
+const { formatted, isValid } = useKilometer(odometer);
+        return( <div  className={cn(" font-mono" )}>{formatted}</div>)
+      },
+          meta: {
+        label: "odometer",
+     
+        variant: "text",
+        // icon: Text,
+      },
+  enableSorting: false,
+  enableHiding: true,
+  enableColumnFilter: false,
+    },
+   {
+      id: "dp_minimum",
+      accessorKey: "dp_minimum",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="DP Minimum" />
+      ),
+      cell: ({ row }) =>{
+   const dp_minimum = row.original.dp_minimum;
+        
+        if (!dp_minimum) {
+          return (
+            <div className="text-muted-foreground 32">
+          N/A
+            </div>
+          );
+        }
 
+        return (
+          <div className=" 40 ">
 
-//       return (
-//        <div className=" w-32">
+       <Badge variant="outline" className="py-1 [&>svg]:size-3.5">
+      
+          
+            <span className="capitalize   font-mono">{formatIDR(row.original.dp_minimum)}</span>
+     
+          </Badge>
+          </div>
+        )
+       } ,
+          meta: {
+        label: "dp_minimum",
+     
+        variant: "number",
+        // icon: Text,
+      },
+        enableColumnFilter: false,
+      enableSorting: false,
+      enableHiding: true,
+    },
+  {
+    accessorKey: "plat_nomor",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Plat Nomor" />
+    ),
+    cell: ({ row }) => (
+        <div className={cn(" font-mono!  " )}>{row.original.plat_nomor}</div>
+    ),
+       meta: {
+        label: "plat nomor",
+     
+        variant: "text",
+        icon: Settings,
+      },
+        enableColumnFilter: false,
+      // enableSorting: false,
+      // enableHiding: true,
+  },
+   {
 
-//       <Badge variant="outline" className="text-muted-foreground px-1.5">
-//         {row.original.status === "finished" ? (
-//           <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
-//         ) : (
-//           <LoaderIcon />
-//         )}
-//         {row.original.status}
-//       </Badge>
-//        </div>
-//       )
-//     },
-//     filterFn: (row, id, value) => {
-//       return value.includes(row.getValue(id))
-//     },
-//   },
-//   {
-//     accessorKey: "visibility",
-//     header: ({ column }) => (
-//       <DataTableColumnHeader column={column} title="Visibility" />
-//     ),
-//     cell: ({ row }) => {
+      id: "kategori",
+      accessorKey: "kategori",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="kategori" />
+      ),
+      cell: ({ row }) => {
+        const kategori = row.original.kategori;
+        // const KategoriValue = typeof KATEGORI_MOTOR[number]['value'];
+        if (!kategori) {
+          return (
+            <div className="text-muted-foreground 32">
+          N/A
+            </div>
+          );
+        }
+         const Icon =  getKategoriIcon(kategori);
+        return (
+       <Badge variant="outline" className="py-1 [&>svg]:size-3.5">
+            <Icon/>
+           
+         
+               <span className="capitalize underline-offset-4 hover:underline">{kategori}</span>
+            
+          </Badge>
+        );
+      },
+      
+           meta: {
+        label: "kategori",
+     
+         variant: "multiSelect",
+        options: KategoriType.map((status) => ({
+          label: status.charAt(0).toUpperCase() + status.slice(1),
+          value: status,
+          // count: statusCounts[status],
+          icon: getKategoriIcon(status),
+        })),
 
+        icon: Settings,
+      },
+      // enableSorting: false,
+      // enableHiding: true,
+    },
+         {
+      id: "merek",
+      accessorKey: "merek",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Merek" />
+      ),
+      cell: ({ row }) => {
+        const merek = row.original.merek;
+              const Icon =  getMerekIcon(merek as string);
+        if (!merek) {
+          return (
+            <div className="text-muted-foreground 36">
+            N\A
+            </div>
+          );
+        }
+        
+        return (
+          <div className=" 40 ">
 
-//       return (
-//        <div className=" w-32">
-
-//       <Badge variant="outline" className="text-muted-foreground px-1.5">
-//         {row.original.visibility === "private" ? (
-//           <EyeOff />
-//         ) : (
-//           <Eye/>
-//         )}
-//         {row.original.visibility}
-//       </Badge>
-//        </div>
-//       )
-//     },
-//     filterFn: (row, id, value) => {
-//       return value.includes(row.getValue(id))
-//     },
-//   },
-//   {
-//     accessorKey: "capacity",
-//     header: ({ column }) => (
-//       <DataTableColumnHeader column={column} title="capacity" />
-//     ),
-//     cell: ({ row }) => {
-
-//       return (
-//         <div className="flex items-center gap-2">
-
-//           <span>{ row.getValue("capacity")}</span>
-//         </div>
-//       )
-//     },
-//     filterFn: (row, id, value) => {
-//       return value.includes(row.getValue(id))
-//     },
-//   },
-//   {
-//     accessorKey: "voters",
-//     header: ({ column }) => (
-//       <DataTableColumnHeader column={column} title="voters" />
-//     ),
-//     cell: ({ row }) => {
-
-//       return (
-//         <div className="flex items-center gap-2">
-
-//           <span>{row.original.voters_count}</span>
-//         </div>
-//       )
-//     },
-//     filterFn: (row, id, value) => {
-//       return value.includes(row.getValue(id))
-//     },
-//   },
-//   {
-//     accessorKey: "candidate",
-//     header: ({ column }) => (
-//       <DataTableColumnHeader column={column} title="candidate" />
-//     ),
-//     cell: ({ row }) => {
-
-//       return (
-//         <div className="flex items-center gap-2">
-
-//           <span>{row.original.candidates_count}</span>
-//         </div>
-//       )
-//     },
-//     filterFn: (row, id, value) => {
-//       return value.includes(row.getValue(id))
-//     },
-//   },
-//   {
-//     accessorKey: "start_date",
-//     header: ({ column }) => (
-//       <DataTableColumnHeader column={column} title="start_date" />
-//     ),
-//     cell: ({ row }) => {
-
-//       return (
-//         <div className="flex items-center gap-2">
-
-//           <span>   {row.original.start_date ? new Date(row.original.start_date).toLocaleDateString() : "N/A"}</span>
-//         </div>
-//       )
-//     },
-//     filterFn: (row, id, value) => {
-//       return value.includes(row.getValue(id))
-//     },
-//   },
-//   {
-//     accessorKey: "end_date",
-//     header: ({ column }) => (
-//       <DataTableColumnHeader column={column} title="end_date" />
-//     ),
-//     cell: ({ row }) => {
-
-//       return (
-//         <div className="flex items-center gap-2">
-
-//           <span>
-//                {row.original.end_date ? new Date(row.original.end_date).toLocaleDateString() : "N/A"}
-//           </span>
-//         </div>
-//       )
-//     },
-//     filterFn: (row, id, value) => {
-//       return value.includes(row.getValue(id))
-//     },
-//   },
-//   {
-//     id: "actions",
-//     cell: ({ row }) => <DataTableRowActions row={row} />,
-//   },
+       <Badge variant="outline" className="py-1 [&>svg]:size-3.5">
+                <Icon/>
+          
+            <span className="capitalize  ">{merek}</span>
+     
+          </Badge>
+          </div>
+        );
+      },
+      meta: {
+        label: "merek",
+        variant: "multiSelect",
+        icon: Bike,
+          options:  MerekType.map((status) => ({
+          label: status.charAt(0).toUpperCase() + status.slice(1),
+          value: status,
+          // count: statusCounts[status],
+          icon: getMerekIcon(status),
+        })),
+      },
+      // enableSorting: true,
+      // enableHiding: true,
+    },
+ 
+   {
+      id: "createdAt",
+      accessorKey: "createdAt",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Created At" />
+      ),
+      cell: ({ row }) => formatDate(row.original.created_at as string | number | Date, "dd/MM/yyyy"),
+      meta: {
+        label: "Created At",
+        variant: "dateRange",
+        icon: CalendarIcon,
+      },
+      enableColumnFilter: true,
+    },
+  {
+    id: "actions",
+    cell: ({ row }) => <DataTableRowActions row={row} />,
+  },
 ]

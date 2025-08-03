@@ -20,7 +20,6 @@ import {
 import { TaskForm } from "../forms/motor-form";
 import { motorSchema , type MotorSchema } from "@/lib/validations";
 
-
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Drawer,
@@ -35,74 +34,78 @@ import {
 import { router } from "@inertiajs/react";
 import { FileUploadRef } from "../../fragments/file-uploud";
 
-
-
 export function CreateTaskSheet() {
   const [open, setOpen] = React.useState(false);
   const [isPending, startTransition] = React.useTransition();
   const [loading, setLoading] = React.useState(false);  
   const fileUploadRef = React.useRef<FileUploadRef>(null)
 
-       const isDesktop = useIsMobile();
+  const isDesktop = useIsMobile();
 
-
-
- 
-
-  const form  =   useForm<MotorSchema>({
+  const form = useForm<MotorSchema>({
     mode: "onSubmit", 
     defaultValues: {
      name: "",
        harga: 0,
        files: [],
-       plat_nomor: ""
+       plat_nomor: "",
+       warna: "",
+       deskripsi: "",
       },
     resolver: zodResolver(motorSchema),
   }) 
 
-
-
-
-  
-
 function onSubmit(input: MotorSchema) {
-    toast.loading("motor creating....", {
+    console.log("Form input before submission:", input);
+    
+    // Validasi apakah semua files memiliki base64Data
+    const filesWithoutBase64 = input.files.filter(file => !file.base64Data);
+    if (filesWithoutBase64.length > 0) {
+      toast.error("Some files are missing data. Please try uploading again.");
+      return;
+    }
+
+    toast.loading("Motor creating....", {
       id: "create-motor"
     });
-  startTransition( () => {
+    
+  startTransition(() => {
     setLoading(true);
 
-console.log(input)
-    
+    // Prepare data dengan struktur yang benar
+
+    console.log("Prepared form data:", input);
+
     router.post(route(`dashboard.motor.store`), input, { 
       preserveScroll: true,
       preserveState: true,
-   
+      onBefore: (visit) => {
+        console.log('Request about to start:', visit);
+      },
       onSuccess: () => {
         form.reset();
         setOpen(false);
-        toast.success("motor created", {
-               id: "create-motor"
-             });
+        toast.success("Motor created successfully", {
+          id: "create-motor"
+        });
         setLoading(false);
       },
       onError: (error) => {
         console.error("Submit error:", error);
-    toast.error(`Error: ${Object.values(error).join(', ')}`, 
-        {
+        toast.error(`Error: ${Object.values(error).join(', ')}`, {
           id: "create-motor"
         });
         setLoading(false);
-           form.reset();
+      },
+      onFinish: () => {
+        setLoading(false);
+        console.log('Request finished');
       }
     });
   });
 }
 
-
-
-      
-        if (!isDesktop) {
+if (!isDesktop) {
   return (
     <Sheet open={open} onOpenChange={setOpen} modal={true} >
  
@@ -121,8 +124,6 @@ console.log(input)
         </SheetHeader>
         <TaskForm isPending={loading} form={form} fileUploadRef={fileUploadRef}  onSubmit={onSubmit}>
           <SheetFooter className="gap-3 px-3 py-4 w-full flex-row justify-end  flex  border-t sm:space-x-0">
-            
-
             <SheetClose disabled={loading} asChild onClick={() => form.reset()}>
               <Button  disabled={loading} type="button" className="  w-fit" size={"sm"} variant="outline">
                     {loading && <Loader className="animate-spin" />}
@@ -133,7 +134,6 @@ console.log(input)
               {loading && <Loader className="animate-spin" />}
               Add
             </Button>
-            
           </SheetFooter>
         </TaskForm>
       </SheetContent> 
@@ -141,31 +141,23 @@ console.log(input)
   );
 }
 
-
-  
-
 return(
      <Drawer open={open} onOpenChange={setOpen} modal={true}  >
    <DrawerTrigger asChild>
-        <Button variant="outline" className=" bg-background" size="sm">
-          <Plus  className=""/>
-         <span className=" sr-only">Add New </span> 
+       <Button variant="outline" className=" text-sm  bg-background" size="sm">
+          <Plus  className=" mr-3 "/>
+          Add New 
         </Button>
       </DrawerTrigger>
       <DrawerContent className="flex flex-col  ">
         <DrawerHeader className="text-left sm:px-6 space-y-1 bg-background    p-4 border-b  ">
         <DrawerTitle className=" text-xl">Add New <Button type="button"   variant={"outline"} className=" ml-2  px-2.5 text-base">motor</Button> </DrawerTitle>
-
-        
               <DrawerDescription className=" text-sm">
                              Fill in the details below to create a new task
                        </DrawerDescription>
-          
         </DrawerHeader>
 
-
          <TaskForm   isPending={loading} form={form}  fileUploadRef={fileUploadRef}  onSubmit={onSubmit}>
-
         <DrawerFooter className="gap-3 px-3 py-4 w-full flex-row justify-end  flex  border-t sm:space-x-0">
              <DrawerClose disabled={loading} asChild onClick={() => form.reset()}>
                             <Button  disabled={loading} type="button" className="  w-fit" size={"sm"} variant="outline">
@@ -179,7 +171,6 @@ return(
                           </Button>
         </DrawerFooter>
           </TaskForm>
-
       </DrawerContent>
     </Drawer>
 )
