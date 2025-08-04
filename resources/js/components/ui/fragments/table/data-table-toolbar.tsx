@@ -36,7 +36,7 @@ export function DataTableToolbar<TData>({
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
    
-
+console.log(createComponent)
  const currentPath = window.location.pathname;
           const pathNames = currentPath.split('/').filter(path => path)[1]
     //  const [completionFilter, setCompletionFilter] = React.useState<string>(filters.merek as string);

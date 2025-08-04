@@ -60,6 +60,9 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
       deskripsi: task?.deskripsi || "",
       tahun: task?.tahun || undefined,
       odometer: task?.odometer || undefined,
+      url: task?.url ,
+
+      status: task?.status,
     },
     resolver: zodResolver(motorSchema),
   });
@@ -81,6 +84,8 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
         kategori: task?.kategori || "",
         deskripsi: task?.deskripsi || "",
         tahun: task?.tahun || undefined,
+        status: task?.status,
+        url: task?.url ,
         odometer: task?.odometer || undefined,
       });
     }

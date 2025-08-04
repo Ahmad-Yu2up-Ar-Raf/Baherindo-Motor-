@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Motor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class OverviewController extends Controller
@@ -12,9 +15,46 @@ class OverviewController extends Controller
      */
     public function index()
     {
-          return Inertia::render('dashboard/index');
-    }
+   $record = Motor::all()->where('user_id', Auth::id());
 
+   $counts = Motor::select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as motor'))
+   ->groupBy(DB::raw('DATE(created_at)'))->where('user_id', Auth::id())
+   ->get();
+
+
+
+
+   $countsHighest = Motor::select(DB::raw('name'), DB::raw('harga as price'))
+   ->orderBy('harga', 'desc')->limit(5)->where('user_id', Auth::id())->get();
+
+
+
+
+
+$merekCount = $record->groupBy('merek')->map(function ($group) {
+    return $group->count();   });
+
+$statusCount = $record->groupBy('status')->map(function ($group) {
+    return $group->count();   });
+$kategoriCount = $record->groupBy('kategori')->map(function ($group) {
+    return $group->count();   });
+
+  $totalMotor = Motor::where('user_id', Auth::id())->count();
+  $terjualMotor = Motor::where('user_id', Auth::id())->where('status', 'terjual')->count();
+
+          return Inertia::render('dashboard/index',[
+                'reports' => [
+                    'totalMotor' => $totalMotor,
+                    'totalMotorTerjual' => $terjualMotor,
+                    'merekCount' => $merekCount,
+                    'countsHighest' => $countsHighest,
+                    'statusCount' => $statusCount,
+                    'kategoriCount' => $kategoriCount,
+                    'countsByDate' => $counts,
+                ],
+          ]);
+    }
+    
     /**
      * Show the form for creating a new resource.
      */

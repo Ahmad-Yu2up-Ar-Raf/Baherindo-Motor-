@@ -19,7 +19,7 @@ import {
 import { DeleteTasksDialog } from "../../fragments/table/delete-task-dialog"
 
 import React from "react"
-import { router } from "@inertiajs/react"
+import { router, usePage } from "@inertiajs/react"
 import { toast } from "sonner"
 import { UpdateTaskSheet } from "../sheet/update-motor-sheet"
 import { MotorSchema } from "@/lib/validations"
@@ -37,7 +37,7 @@ export function DataTableRowActions<TData>({
   const [openUpdate, setOpenUpdate] = React.useState(false)
   const [openModal, setOpenModal] = React.useState(false)
   const [processing, setProcessing] = React.useState(false);
-const currentPath = window.location.pathname;
+const currentPath = usePage().url
           const pathNames = currentPath.split('/').filter(path => path)[1]
   const handleDelete = (taskId: number) => {
     try {

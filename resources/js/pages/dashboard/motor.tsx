@@ -1,4 +1,4 @@
-import { CreateTaskSheet } from "@/components/ui/core/sheet/create-motor-sheet";
+
 import { DataTable } from "@/components/ui/fragments/table/data-table";
 import { columns } from "@/components/ui/fragments/table/motor-columns";
 import { Filters } from "@/types/index";
@@ -37,7 +37,7 @@ export default function Pages({  motor, pagination, filters} : PageProps) {
                     <div className="@container/main flex flex-1 flex-col gap-2">
                 
           
-                        <div className="flex flex-col px-5 gap-4 py-4 md:gap-6 md:py-6">
+                        <div className="flex flex-col  gap-4 md:gap-6 ">
 
 
                         <header className="flex flex-col gap-0.5">
@@ -47,7 +47,7 @@ export default function Pages({  motor, pagination, filters} : PageProps) {
 
             <DataTable 
                             nas="Siswa"
-                            createComponent={<CreateTaskSheet />}
+                        
                             data={motor}
                             columns={columns}
                             pagination={pagination}

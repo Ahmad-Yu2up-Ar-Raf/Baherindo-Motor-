@@ -1,5 +1,5 @@
 "use client"
-
+import { EmptyState } from "../empty-state"
 import * as React from "react"
 import {
   ColumnDef,
@@ -16,7 +16,7 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table"
-import { router as inertiaRouter } from '@inertiajs/react'
+import { router as inertiaRouter, usePage } from '@inertiajs/react'
 
 import {
   Table,
@@ -30,6 +30,8 @@ import {
 import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
 import { Filters, Filters as filters } from "@/types/index"
+import { Bike, BriefcaseBusiness, Building, DoorOpen, HardHat } from "lucide-react"
+import { CreateTaskSheet } from "../../core/sheet/create-motor-sheet"
 
 
 // import { KelasSchema } from "@/lib/validations"
@@ -48,7 +50,7 @@ interface DataTableProps<TData, TValue> {
   // kelas?: KelasSchema[]
     nas?: string
     
-      createComponent: React.ReactNode
+
 }
 
 export function DataTable<TData, TValue>({
@@ -59,7 +61,7 @@ export function DataTable<TData, TValue>({
   filters,
 nas,
 
-createComponent,
+
 // kelas
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({})
@@ -70,7 +72,8 @@ createComponent,
     pageIndex: serverPagination.currentPage - 1, 
     pageSize: serverPagination.perPage,
   })
-
+  const currentPath = usePage().url;
+  const pathNames = currentPath.split('/').filter(path => path)[1]
   const table = useReactTable({
     data,
     columns,
@@ -93,8 +96,7 @@ createComponent,
     onPaginationChange: (updater) => {
       const newPagination = typeof updater === 'function' ? updater(pagination) : updater
       setPagination(newPagination)
-        const currentPath = window.location.pathname;
-          const pathNames = currentPath.split('/').filter(path => path)[1]
+    
       inertiaRouter.get(
         route(`dashboard.${pathNames}.index`),
         { 
@@ -119,9 +121,47 @@ createComponent,
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
+
+  const [open, setOpen] = React.useState(false);
+
+
+
+ if(data.length == 0){
+
+   return (
+    <>
+    <EmptyState
+    icons={[HardHat, Bike, BriefcaseBusiness]}
+    title={`No ${pathNames} data yet`}
+    description={`Start by adding your first ${pathNames}`}
+    action={{
+      label: `Add ${pathNames}`,
+      onClick: () => {
+        setOpen(!open)
+      }
+    }}
+  />
+  <SheetComponents 
+   trigger={false}
+    pathCurent={pathNames}
+ 
+    open={open}
+    onOpenChange={() => {
+      setOpen(!open)
+    }}
+  />
+    </>
+   )
+ }
+
   return (
     <div className="flex flex-col gap-4">
-      <DataTableToolbar filters={filters as filters} getColums={nas} createComponent={createComponent}
+      <DataTableToolbar filters={filters as filters} getColums={nas} createComponent={  <SheetComponents 
+   trigger={true}
+    pathCurent={pathNames}
+ 
+
+  />}
    
        table={table} />
       <div className="rounded-md border">
@@ -178,3 +218,34 @@ createComponent,
     </div>
   )
 }
+
+
+const SheetComponents = React.memo(({ 
+  pathCurent, 
+ 
+  open, 
+  trigger,
+  onOpenChange ,
+
+}: {
+  pathCurent: string;
+  trigger: boolean
+  open?: boolean;
+  
+  onOpenChange?: (open: boolean) => void;
+}) => {
+  if (pathCurent === "motor") {
+    return (
+      <CreateTaskSheet
+        trigger={trigger} 
+        open={open} 
+         
+        onOpenChange={onOpenChange}
+      />
+    );
+  }
+  
+ 
+});
+
+SheetComponents.displayName = 'SheetComponents';

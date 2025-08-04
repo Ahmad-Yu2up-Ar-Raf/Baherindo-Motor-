@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import type { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
-import { MEREK_MOTOR, KATEGORI_MOTOR } from "@/config/motorcyle-type";
+import { MEREK_MOTOR, KATEGORI_MOTOR, STATUS_MOTOR } from "@/config/enum-type";
 import {
   Form,
   FormControl,
@@ -70,11 +70,10 @@ export function TaskForm<T extends FieldValues, >({
 }: TaskFormProps<T>) {
 
 
-  const [isOpen, setIsOpen] = React.useState(false)
 
-  //  console.log("initialFiles", initialFiles);
-  const currentYear = new Date().getFullYear();
-      const years = Array.from({ length: 10 }, (_, i) => currentYear - 5 + i);
+
+
+   
 
   return (
     <Form {...form}>
@@ -107,6 +106,10 @@ export function TaskForm<T extends FieldValues, >({
                 </FormItem>
               )}
             />
+
+
+
+
             <MoneyInput
           form={form}
           disable={isPending}
@@ -165,30 +168,28 @@ export function TaskForm<T extends FieldValues, >({
             />
 
 <FormField
-          control={form.control}
-          name={"tahun" as FieldPath<T>}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tahun Keluaran</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select year" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {years.map((item,i ) => (
+              control={form.control}
+              name={"tahun" as FieldPath<T>}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className={cn(isPending && "text-muted-foreground")}>Tahun</FormLabel>
+                  <FormControl>
+                    <Input 
+                
+                      placeholder="motor name"
+                      type="number"
+                      disabled={isPending}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription className=" sr-only">Your Motor name.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                  <SelectItem key={i} value={item.toString()}>{item}</SelectItem>
-                  ))}
-                  
-                </SelectContent>
-              </Select>
-                <FormDescription className=" sr-only">You can manage email addresses in your email settings.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
+
 
     <KilometerInput
   form={form}
@@ -209,6 +210,29 @@ export function TaskForm<T extends FieldValues, >({
             
             <section className="space-y-10">
          
+
+
+            <FormField
+              control={form.control}
+              name={"url" as FieldPath<T>}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className={cn(isPending && "text-muted-foreground")}>URL Video</FormLabel>
+                  <FormControl>
+                    <Input 
+                
+                      placeholder="url"
+                      type="url"
+                      disabled={isPending}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription className=" sr-only">Your Motor name.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
 
             <FormField
                 control={form.control}
@@ -330,73 +354,61 @@ export function TaskForm<T extends FieldValues, >({
             </FormItem>
           )}
         />
-
-
-
-
 <FormField
           control={form.control}
-          name={"merek" as FieldPath<T>}
+          name={"status" as FieldPath<T>}
           render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Merek</FormLabel>
-              <Popover open={isOpen} onOpenChange={setIsOpen}>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className={cn(
-                        "w-full justify-between",
-                        !field.value && "text-muted-foreground"
-                      )}
-                      
-                    >
-                      {field.value
-                        ? MEREK_MOTOR.find(
-                            (language) => language.value === field.value
-                          )?.label
-                        : "Select Merek"}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
-                  <Command>
-                    <CommandInput placeholder="Search merek..." />
-                    <CommandList>
-                      <CommandEmpty>No Merek found.</CommandEmpty>
-                      <CommandGroup>
-                        {MEREK_MOTOR.map((language) => (
-                          <CommandItem
-                            value={language.label}
-                            key={language.value}
-                            onSelect={() => {
-                              form.setValue("merek" as FieldPath<T>, language.value as any);
-                              setIsOpen(false);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                language.value === field.value
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                            {language.label}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              <FormDescription className=" sr-only">This is the language that will be used in the dashboard.</FormDescription>
+            <FormItem>
+              <FormLabel>Status</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {STATUS_MOTOR.map((item,i ) => (
+
+                  <SelectItem key={i} value={item.value}>{item.label}</SelectItem>
+                  ))}
+                  
+                </SelectContent>
+              </Select>
+                <FormDescription className=" sr-only">You can manage email addresses in your email settings.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
+<FormField
+          control={form.control}
+          name={"merek" as FieldPath<T>}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Merek</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {MEREK_MOTOR.map((item,i ) => (
+
+                  <SelectItem key={i} value={item.value}>{item.label}</SelectItem>
+                  ))}
+                  
+                </SelectContent>
+              </Select>
+                <FormDescription className=" sr-only">You can manage email addresses in your email settings.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+
+
+
+
 
             </section>
           </section>

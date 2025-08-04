@@ -7,11 +7,11 @@ import { Checkbox } from "@/components/ui/fragments/checkbox"
 import { DataTableColumnHeader } from "./data-table-column-header"
 import { cn } from "@/lib/utils"
 
-import { KategoriType, MerekType, MotorSchema } from "@/lib/validations"
+import { KategoriType, MerekType, MotorSchema, StatusType } from "@/lib/validations"
 import { formatDate } from "date-fns"
 import { Bike, CalendarIcon, Settings } from "lucide-react"
 import { Badge } from "../badge"
-import { getKategoriIcon, getMerekIcon } from "@/utils/motorcyle-utils"
+import { getKategoriIcon, getMerekIcon, getStatusIcon } from "@/utils/motorcyle-utils"
 import { formatIDR } from "@/hooks/use-money-format"
 import { DataTableRowActions } from "../../core/table/data-table-row-action-motor"
 import {  useKilometer } from "@/hooks/useKilometer"
@@ -193,44 +193,89 @@ const { formatted, isValid } = useKilometer(odometer);
       // enableSorting: false,
       // enableHiding: true,
   },
+  {
+
+    id: "kategori",
+    accessorKey: "kategori",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="kategori" />
+    ),
+    cell: ({ row }) => {
+      const kategori = row.original.kategori;
+      // const KategoriValue = typeof KATEGORI_MOTOR[number]['value'];
+      if (!kategori) {
+        return (
+          <div className="text-muted-foreground 32">
+        N/A
+          </div>
+        );
+      }
+       const Icon =  getKategoriIcon(kategori);
+      return (
+     <Badge variant="outline" className="py-1 [&>svg]:size-3.5">
+          <Icon/>
+         
+       
+             <span className="capitalize underline-offset-4 ">{kategori}</span>
+          
+        </Badge>
+      );
+    },
+    
+         meta: {
+      label: "kategori",
+   
+       variant: "multiSelect",
+      options: KategoriType.map((status) => ({
+        label: status.charAt(0).toUpperCase() + status.slice(1),
+        value: status,
+        // count: statusCounts[status],
+        icon: getKategoriIcon(status),
+      })),
+
+      icon: Settings,
+    },
+    // enableSorting: false,
+    // enableHiding: true,
+  },
    {
 
-      id: "kategori",
-      accessorKey: "kategori",
+      id: "status",
+      accessorKey: "status",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="kategori" />
+        <DataTableColumnHeader column={column} title="status" />
       ),
       cell: ({ row }) => {
-        const kategori = row.original.kategori;
+        const status = row.original.status;
         // const KategoriValue = typeof KATEGORI_MOTOR[number]['value'];
-        if (!kategori) {
+        if (!status) {
           return (
             <div className="text-muted-foreground 32">
           N/A
             </div>
           );
         }
-         const Icon =  getKategoriIcon(kategori);
+         const Icon =  getStatusIcon(status);
         return (
        <Badge variant="outline" className="py-1 [&>svg]:size-3.5">
             <Icon/>
            
          
-               <span className="capitalize underline-offset-4 hover:underline">{kategori}</span>
+               <span className="capitalize underline-offset-4 ">{status}</span>
             
           </Badge>
         );
       },
       
            meta: {
-        label: "kategori",
+        label: "status",
      
          variant: "multiSelect",
-        options: KategoriType.map((status) => ({
+        options: StatusType.map((status) => ({
           label: status.charAt(0).toUpperCase() + status.slice(1),
           value: status,
           // count: statusCounts[status],
-          icon: getKategoriIcon(status),
+          icon: getStatusIcon(status),
         })),
 
         icon: Settings,

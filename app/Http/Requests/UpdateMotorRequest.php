@@ -33,9 +33,9 @@ class UpdateMotorRequest extends FormRequest
             'merek' => 'nullable|string',
             'kategori' => 'nullable|string',
             'masa_berlaku_pajak' => 'nullable|date',
-            'tahun' => 'nullable|string',
+            'tahun' => 'nullable|integer|min:1900|max:' . date('Y'),
                  'url' => 'nullable|string',
-            // Validasi untuk struktur files yang kompleks (optional untuk update)
+           'status' => 'nullable|string',
             'files' => 'nullable|array|max:10',
             'files.*.file' => 'nullable|array',
             'files.*.file.name' => 'required_with:files.*.file|string|max:255',

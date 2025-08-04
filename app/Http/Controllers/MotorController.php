@@ -45,7 +45,7 @@ class MotorController extends Controller
         }
         
         if ($merek) {
-            $query->where('merek', $merek);
+            $query->where('merek', array($merek));
         }
         
         if ($kategori) {

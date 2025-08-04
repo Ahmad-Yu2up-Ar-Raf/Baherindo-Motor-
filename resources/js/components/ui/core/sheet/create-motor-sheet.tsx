@@ -33,13 +33,22 @@ import {
 } from "@/components/ui/fragments/drawer";
 import { router } from "@inertiajs/react";
 import { FileUploadRef } from "../../fragments/file-uploud";
+import { cn } from "@/lib/utils";
 
-export function CreateTaskSheet() {
-  const [open, setOpen] = React.useState(false);
+interface type  extends React.ComponentPropsWithRef<typeof Sheet>{
+  trigger? : boolean
+
+}
+
+
+export function CreateTaskSheet({ ...props}: type) {
+
   const [isPending, startTransition] = React.useTransition();
   const [loading, setLoading] = React.useState(false);  
   const fileUploadRef = React.useRef<FileUploadRef>(null)
-
+  const [internalOpen, setInternalOpen] = React.useState(false);
+  const isOpen  = props.open ? open : internalOpen;
+  const setIsOpen = props.onOpenChange || setInternalOpen
   const isDesktop = useIsMobile();
 
   const form = useForm<MotorSchema>({
@@ -84,7 +93,7 @@ function onSubmit(input: MotorSchema) {
       },
       onSuccess: () => {
         form.reset();
-        setOpen(false);
+        setIsOpen(false);
         toast.success("Motor created successfully", {
           id: "create-motor"
         });
@@ -107,9 +116,9 @@ function onSubmit(input: MotorSchema) {
 
 if (!isDesktop) {
   return (
-    <Sheet open={open} onOpenChange={setOpen} modal={true} >
+    <Sheet open={isOpen} onOpenChange={setIsOpen} modal={true} >
  
-      <SheetTrigger asChild  >
+      <SheetTrigger asChild  className={cn(props.trigger == false && "sr-only" )} >
         <Button variant="outline" className=" text-sm  bg-background" size="sm">
           <Plus  className=" mr-3 "/>
           Add New 
@@ -142,8 +151,8 @@ if (!isDesktop) {
 }
 
 return(
-     <Drawer open={open} onOpenChange={setOpen} modal={true}  >
-   <DrawerTrigger asChild>
+     <Drawer open={isOpen} onOpenChange={setIsOpen}  modal={true}  >
+   <DrawerTrigger asChild className={cn(props.trigger == false && "sr-only" )} >
        <Button variant="outline" className=" text-sm  bg-background" size="sm">
           <Plus  className=" mr-3 "/>
           Add New 

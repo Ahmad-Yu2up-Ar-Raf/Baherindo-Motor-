@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Kategori;
 use App\Enums\Merek;
+use App\Enums\Status;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,6 +32,7 @@ class Motor extends Model
  'odometer',
  'tahun',
  'url',
+ 'status'
      ];
  
  
@@ -41,7 +43,7 @@ class Motor extends Model
          'harga' => 'decimal:2',
          'odometer' => 'decimal:1',
          'warna' => 'string',
-         'tahun' => 'string',
+         'tahun' => 'integer',
          'plat_nomor' => 'string',
     'dp_minimum' => 'decimal:2',
     'masa_berlaku_pajak' => 'datetime',
@@ -49,6 +51,7 @@ class Motor extends Model
    'url' => 'string',
    'files' => 'array',
    'merek' => Merek::class,
+   'status' => Status::class,
    'kategori' => Kategori::class,
      ]; 
  

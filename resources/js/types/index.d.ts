@@ -59,7 +59,58 @@ export interface sidebarType {  items: {
 
 export interface Filters {
     search: string;
-    merek?: string;
-    kategori?: string;
+    merek?: string[];
+    kategori?: string[];
         [key: string]: unknown;
   };
+
+  export interface DataCard { 
+    title: string;
+    description: string;
+    value: number;
+    icon: LucideIcon;
+   label?: string;
+  }
+  
+
+
+  export interface tabsLinktype{
+    link: string
+    name: string
+  }
+
+export interface ReportDataByDate { 
+    date: string;
+    motor: number;
+
+}
+export interface HighesCount { 
+    name: string;
+    price: number;
+
+}
+  
+export interface Reports {
+    totalMotor: number
+    totalMotorTerjual: number
+    merekCount: Record<string, number>
+    kategoriCount: Record<string, number>
+    statusCount: Record<string, number>
+    countsHighest: HighesCount[]
+    countsByDate: ReportDataByDate[]
+    [key: string]: unknown; 
+}
+
+
+export type PageProps = {
+    reports : Reports
+ }
+
+
+ export interface ChartDataType {
+    date: string;
+    motor?: number;
+    mess?: number;
+    rooms?: number;
+  }
+  

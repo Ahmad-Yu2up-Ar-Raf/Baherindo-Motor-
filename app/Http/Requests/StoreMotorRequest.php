@@ -29,10 +29,11 @@ class StoreMotorRequest extends FormRequest
             'odometer' => 'required|numeric|min:0|max:999999999.9',
             'deskripsi' => 'nullable|string|max:1000',
             'merek' => 'nullable|string',
+            'status' => 'nullable|string',
             'kategori' => 'nullable|string',
             'url' => 'nullable|string',
             'masa_berlaku_pajak' => 'nullable|date',
-            'tahun' => 'required|string',
+            'tahun' => 'nullable|integer|min:1900|max:' . date('Y'),
             
             // Validasi untuk struktur files yang kompleks dengan base64
             'files' => 'required|array|min:1|max:10',

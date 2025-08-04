@@ -22,7 +22,7 @@ export default ({ children, ...props }: AppLayoutProps) =>
     return(
     <AppLayoutTemplate  {...props}>
         <Head title={pathNames[currentPath]}/>
-           <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-2 overflow-x-auto">
+           <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-5 overflow-x-auto">
 
         {children ? children: (
             <DashboardSkeleton/>

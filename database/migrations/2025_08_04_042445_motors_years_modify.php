@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('motors', function (Blueprint $table) {
-         $table->url('url')->unique()->nullable();
+            $table->year('tahun')->nullable();
         });
     }
 
