@@ -29,12 +29,9 @@ import {
 
 import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
-import { Filters, Filters as filters } from "@/types/index"
+import { Filters } from "@/types/index"
 import { Bike, BriefcaseBusiness, Building, DoorOpen, HardHat } from "lucide-react"
 import { CreateTaskSheet } from "../../core/sheet/create-motor-sheet"
-
-
-// import { KelasSchema } from "@/lib/validations"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -46,23 +43,15 @@ interface DataTableProps<TData, TValue> {
     total: number;
   };
   filters: Filters;
-  // option?: any
-  // kelas?: KelasSchema[]
-    nas?: string
-    
-
+  nas?: string
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  // option,
   data,
   pagination: serverPagination,
   filters,
-nas,
-
-
-// kelas
+  nas,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -72,8 +61,10 @@ nas,
     pageIndex: serverPagination.currentPage - 1, 
     pageSize: serverPagination.perPage,
   })
+  
   const currentPath = usePage().url;
   const pathNames = currentPath.split('/').filter(path => path)[1]
+  
   const table = useReactTable({
     data,
     columns,
@@ -85,27 +76,65 @@ nas,
       columnFilters,
       pagination,
     },
-  //  meta: {
-  //     kelas: kelas
-  //   } as TableMeta,
     manualPagination: true,
+    manualFiltering: true, // Important: Let backend handle filtering
+    manualSorting: true,   // Important: Let backend handle sorting
     onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
+    onSortingChange: (updater) => {
+      const newSorting = typeof updater === 'function' ? updater(sorting) : updater
+      setSorting(newSorting)
+      
+      // Send sorting to backend
+      const sortParam = newSorting.length > 0 
+        ? `${newSorting[0].id}:${newSorting[0].desc ? 'desc' : 'asc'}`
+        : undefined;
+      
+      // Preserve current filters
+      const currentParams = new URLSearchParams(window.location.search);
+      const params: Record<string, any> = {};
+      currentParams.forEach((value, key) => {
+        if (key !== 'sort') {
+          params[key] = value;
+        }
+      });
+      
+      if (sortParam) {
+        params.sort = sortParam;
+      }
+      
+      inertiaRouter.get(
+        route(`dashboard.${pathNames}.index`),
+        params,
+        { 
+          preserveState: true,
+          preserveScroll: true,
+          only: [pathNames, 'pagination']
+        }
+      )
+    },
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: (updater) => {
       const newPagination = typeof updater === 'function' ? updater(pagination) : updater
       setPagination(newPagination)
     
+      // Preserve current filters when paginating
+      const currentParams = new URLSearchParams(window.location.search);
+      const params: Record<string, any> = {
+        page: newPagination.pageIndex + 1,
+        perPage: newPagination.pageSize,
+      };
+      
+      // Add existing filters
+      currentParams.forEach((value, key) => {
+        if (!['page', 'perPage'].includes(key)) {
+          params[key] = value;
+        }
+      });
+      
       inertiaRouter.get(
         route(`dashboard.${pathNames}.index`),
-        { 
-          page: newPagination.pageIndex + 1,
-          perPage: newPagination.pageSize,
-          search: filters?.search,
-          merek: filters?.merek,
-          kategori: filters?.kategori,
-        },
+        params,
         { 
           preserveState: true,
           preserveScroll: true,
@@ -121,49 +150,49 @@ nas,
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
-
   const [open, setOpen] = React.useState(false);
 
-
-
- if(data.length == 0){
-
-   return (
-    <>
-    <EmptyState
-    icons={[HardHat, Bike, BriefcaseBusiness]}
-    title={`No ${pathNames} data yet`}
-    description={`Start by adding your first ${pathNames}`}
-    action={{
-      label: `Add ${pathNames}`,
-      onClick: () => {
-        setOpen(!open)
-      }
-    }}
-  />
-  <SheetComponents 
-   trigger={false}
-    pathCurent={pathNames}
- 
-    open={open}
-    onOpenChange={() => {
-      setOpen(!open)
-    }}
-  />
-    </>
-   )
- }
+  // Handle empty state
+  if(data.length === 0 && Object.keys(filters).every(key => !filters[key] || (Array.isArray(filters[key]) && filters[key].length === 0))) {
+    return (
+      <>
+        <EmptyState
+          icons={[HardHat, Bike, BriefcaseBusiness]}
+          title={`No ${pathNames} data yet`}
+          description={`Start by adding your first ${pathNames}`}
+          action={{
+            label: `Add ${pathNames}`,
+            onClick: () => {
+              setOpen(!open)
+            }
+          }}
+        />
+        <SheetComponents 
+          trigger={false}
+          pathCurent={pathNames}
+          open={open}
+          onOpenChange={() => {
+            setOpen(!open)
+          }}
+        />
+      </>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-4">
-      <DataTableToolbar filters={filters as filters} getColums={nas} createComponent={  <SheetComponents 
-   trigger={true}
-    pathCurent={pathNames}
- 
-
-  />}
-   
-       table={table} />
+      <DataTableToolbar 
+        filters={filters} 
+        getColums={nas} 
+        createComponent={
+          <SheetComponents 
+            trigger={true}
+            pathCurent={pathNames}
+          />
+        }
+        table={table} 
+      />
+      
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -207,31 +236,28 @@ nas,
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {data.length === 0 ? "No results found with current filters." : "No results."}
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
+      
       <DataTablePagination table={table} serverPagination={serverPagination} />
     </div>
   )
 }
 
-
 const SheetComponents = React.memo(({ 
   pathCurent, 
- 
   open, 
   trigger,
-  onOpenChange ,
-
+  onOpenChange,
 }: {
   pathCurent: string;
   trigger: boolean
   open?: boolean;
-  
   onOpenChange?: (open: boolean) => void;
 }) => {
   if (pathCurent === "motor") {
@@ -239,13 +265,12 @@ const SheetComponents = React.memo(({
       <CreateTaskSheet
         trigger={trigger} 
         open={open} 
-         
         onOpenChange={onOpenChange}
       />
     );
   }
   
- 
+  return null;
 });
 
 SheetComponents.displayName = 'SheetComponents';

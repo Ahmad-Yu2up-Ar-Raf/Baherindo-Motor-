@@ -3,7 +3,6 @@
 import type { Option } from "@/types/data-table";
 import type { Column } from "@tanstack/react-table";
 import { Check, PlusCircle, XCircle } from "lucide-react";
-
 import { Badge } from "../badge";
 import { Button } from "../button";
 import {
@@ -23,56 +22,110 @@ import {
 import { Separator } from "../separator";
 import { cn } from "@/lib/utils";
 import * as React from "react";
+import { router } from "@inertiajs/react";
+import { debounce } from "lodash";
 
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;
   title?: string;
   options: Option[];
   multiple?: boolean;
+  // Props baru untuk backend filtering
+  currentFilters?: string[];
+  onFilterChange?: (values: string[]) => void;
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
   options,
-  multiple,
+  multiple = true,
+  currentFilters = [],
+  onFilterChange,
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const [open, setOpen] = React.useState(false);
-
-  const columnFilterValue = column?.getFilterValue();
-  const selectedValues = new Set(
-    Array.isArray(columnFilterValue) ? columnFilterValue : [],
+  
+  // Gunakan filter dari backend sebagai source of truth
+  const selectedValues = new Set(currentFilters);
+  
+  // Debounced function untuk mengirim request ke backend
+  const debouncedFilterChange = React.useMemo(
+    () => debounce((values: string[]) => {
+      const currentPath = window.location.pathname;
+      const pathNames = currentPath.split('/').filter(path => path)[1];
+      
+      // Ambil query parameters yang sudah ada
+      const currentParams = new URLSearchParams(window.location.search);
+      const params: Record<string, any> = {};
+      
+      // Preserve existing parameters
+      currentParams.forEach((value, key) => {
+        if (key !== column?.id) { // Jangan ambil parameter filter yang sedang diubah
+          params[key] = value;
+        }
+      });
+      
+      // Set parameter filter baru
+      if (values.length > 0) {
+        params[column?.id || title?.toLowerCase() || 'filter'] = multiple ? values : values[0];
+      }
+      
+      // Kirim request ke backend
+      router.get(
+        route(`dashboard.${pathNames}.index`),
+        params,
+        {
+          preserveState: true,
+          preserveScroll: true,
+          only: [pathNames, 'pagination', 'filters']
+        }
+      );
+      
+      // Callback untuk parent component
+      onFilterChange?.(values);
+    }, 300),
+    [column?.id, title, multiple, onFilterChange]
   );
 
-
-  
   const onItemSelect = React.useCallback(
     (option: Option, isSelected: boolean) => {
-      if (!column) return;
-
+      let newSelectedValues: string[];
+      
       if (multiple) {
-        const newSelectedValues = new Set(selectedValues);
+        const newSet = new Set(selectedValues);
         if (isSelected) {
-          newSelectedValues.delete(option.value);
+          newSet.delete(option.value);
         } else {
-          newSelectedValues.add(option.value);
+          newSet.add(option.value);
         }
-        const filterValues = Array.from(newSelectedValues);
-        column.setFilterValue(filterValues.length ? filterValues : undefined);
+        newSelectedValues = Array.from(newSet);
       } else {
-        column.setFilterValue(isSelected ? undefined : [option.value]);
+        newSelectedValues = isSelected ? [] : [option.value];
         setOpen(false);
       }
+      
+      // Update frontend table filter (untuk UI consistency)
+      if (column) {
+        column.setFilterValue(newSelectedValues.length ? newSelectedValues : undefined);
+      }
+      
+      // Trigger backend update
+      debouncedFilterChange(newSelectedValues);
     },
-    [column, multiple, selectedValues],
+    [selectedValues, multiple, column, debouncedFilterChange]
   );
 
   const onReset = React.useCallback(
     (event?: React.MouseEvent) => {
       event?.stopPropagation();
+      
+      // Reset frontend filter
       column?.setFilterValue(undefined);
+      
+      // Reset backend filter
+      debouncedFilterChange([]);
     },
-    [column],
+    [column, debouncedFilterChange]
   );
 
   return (
@@ -153,11 +206,11 @@ export function DataTableFacetedFilter<TData, TValue>({
                           : "opacity-50 [&_svg]:invisible",
                       )}
                     >
-                      {/* <Check /> */}
+                      <Check className="size-3 text-primary-foreground" />
                     </div>
-                    {option.icon && <option.icon  className=" text-accent-foreground"/>}
+                    {option.icon && <option.icon className="text-accent-foreground"/>}
                     <span className="truncate">{option.label}</span>
-                    {option.count! > 0 && (
+                    {option.count && option.count > 0 && (
                       <span className="ml-auto font-mono text-xs">
                         {option.count}
                       </span>

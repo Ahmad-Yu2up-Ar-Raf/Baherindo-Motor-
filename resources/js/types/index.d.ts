@@ -59,8 +59,9 @@ export interface sidebarType {  items: {
 
 export interface Filters {
     search: string;
-    merek?: string[];
-    kategori?: string[];
+   merek?: Array<{label: string, value: string, count: number}>;
+    kategori?: Array<{label: string, value: string, count: number}>;
+    status?: Array<{label: string, value: string, count: number}>;
         [key: string]: unknown;
   };
 
