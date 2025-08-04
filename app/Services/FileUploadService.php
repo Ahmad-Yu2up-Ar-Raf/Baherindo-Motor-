@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -57,19 +58,21 @@ class FileUploadService
 
             // Store file
             $filePath = $file->storeAs($fullFolder, $fileName, 'public');
-return [
-    'file' => [
-        'name' => $file['name'],           // Use array key instead of method
-        'size' => $file['size'],           // Use array key instead of method  
-        'type' => $file['type'],           // Use array key instead of method
-    ],
-    'preview' => Storage::url($filePath),
-    'id' => $file['id'] ?? Str::random(10),  // Get id from $fileData, not $file
-    'base64Data' => $file['base64Data']      // Get base64Data from $fileData, not $file
-];
+
+            // Return consistent structure
+            return [
+                'file' => [
+                    'name' => $file->getClientOriginalName(),
+                    'size' => $file->getSize(),
+                    'type' => $file->getMimeType(),
+                ],
+                'file_path' => $filePath, // TAMBAHKAN INI untuk konsistensi
+                'preview' => Storage::url($filePath),
+                'id' => Str::random(10),
+            ];
 
         } catch (\Exception $e) {
-            // \Log::error('File upload error: ' . $e->getMessage());
+            Log::error('File upload error: ' . $e->getMessage());
             return null;
         }
     }
@@ -141,7 +144,7 @@ return [
                 Storage::disk('public')->delete($fileData['file_path']);
             }
         } catch (\Exception $e) {
-            // \Log::error('File deletion error: ' . $e->getMessage());
+        Log::error('File deletion error: ' . $e->getMessage());
         }
     }
 

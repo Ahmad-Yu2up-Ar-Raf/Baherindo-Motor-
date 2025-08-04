@@ -4,7 +4,6 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-
 use Illuminate\Support\Facades\Log;
 
 class JsonFileUploadService
@@ -27,11 +26,16 @@ class JsonFileUploadService
         $uploadedFiles = [];
 
         foreach ($filesData as $fileData) {
+            // Cek apakah ini file baru (ada base64Data) atau file existing (ada file_path)
             if (isset($fileData['file']) && isset($fileData['base64Data'])) {
+                // File baru dengan base64 data
                 $result = $this->processBase64File($fileData, $folder);
                 if ($result) {
                     $uploadedFiles[] = $result;
                 }
+            } elseif (isset($fileData['file_path'])) {
+                // File existing yang sudah ada di storage
+                $uploadedFiles[] = $fileData;
             }
         }
 
@@ -73,16 +77,16 @@ class JsonFileUploadService
                 throw new \Exception('Failed to store file');
             }
 
-        return [
-    'file' => [
-        'name' => $file['name'],           // Use array key instead of method
-        'size' => $file['size'],           // Use array key instead of method  
-        'type' => $file['type'],           // Use array key instead of method
-    ],
-    'preview' => Storage::url($filePath),
-    'id' => $fileData['id'] ?? Str::random(10),  // Get id from $fileData, not $file
-    'base64Data' => $fileData['base64Data']      // Get base64Data from $fileData, not $file
-];
+            return [
+                'file' => [
+                    'name' => $file['name'],
+                    'size' => $file['size'],
+                    'type' => $file['type'],
+                ],
+                'file_path' => $filePath, // TAMBAHKAN INI untuk konsistensi
+                'preview' => Storage::url($filePath),
+                'id' => $fileData['id'] ?? Str::random(10),
+            ];
 
         } catch (\Exception $e) {
             Log::error('JSON file processing error: ' . $e->getMessage());
@@ -160,6 +164,7 @@ class JsonFileUploadService
         try {
             if (isset($fileData['file_path']) && $fileData['file_path']) {
                 Storage::disk('public')->delete($fileData['file_path']);
+                Log::info('File deleted: ' . $fileData['file_path']);
             }
         } catch (\Exception $e) {
             Log::error('File deletion error: ' . $e->getMessage());
@@ -172,5 +177,31 @@ class JsonFileUploadService
     public function getFileUrl(string $filePath): string
     {
         return Storage::url($filePath);
+    }
+
+    /**
+     * Compare files to determine which ones to delete
+     */
+    public function getFilesToDelete(array $oldFiles, array $newFiles): array
+    {
+        $newFilePaths = [];
+        
+        // Ambil file_path dari file baru
+        foreach ($newFiles as $newFile) {
+            if (isset($newFile['file_path'])) {
+                $newFilePaths[] = $newFile['file_path'];
+            }
+        }
+
+        $filesToDelete = [];
+        
+        // Cari file lama yang tidak ada di file baru
+        foreach ($oldFiles as $oldFile) {
+            if (isset($oldFile['file_path']) && !in_array($oldFile['file_path'], $newFilePaths)) {
+                $filesToDelete[] = $oldFile;
+            }
+        }
+
+        return $filesToDelete;
     }
 }

@@ -101,7 +101,7 @@ export function TaskForm<T extends FieldValues, >({
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>Your Motor name.</FormDescription>
+                  <FormDescription className=" sr-only">Your Motor name.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

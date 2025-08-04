@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
-
 class MotorController extends Controller
 {
     protected $fileUploadService;
@@ -45,7 +44,7 @@ class MotorController extends Controller
         }
         
         if ($merek) {
-            $query->where('merek', array($merek));
+            $query->where('merek', $merek);
         }
         
         if ($kategori) {
@@ -145,29 +144,46 @@ class MotorController extends Controller
         $validated = $request->validated();
 
         try {
-            $uploadedFiles = $motor->files ?? [];
+            $oldFiles = $motor->files ?? [];
+            $uploadedFiles = $oldFiles; // Default: keep old files
+
+            Log::info('Update request received', [
+                'motor_id' => $motor->id,
+                'has_files_in_request' => isset($validated['files']),
+                'old_files_count' => count($oldFiles),
+                'request_files_count' => isset($validated['files']) ? count($validated['files']) : 0
+            ]);
 
             // Handle file uploads if provided
-            if ($request->hasFile('files')) {
-                // Traditional file upload
-                $this->fileUploadService->deleteMultipleFiles($motor->files ?? []);
-                $uploadedFiles = $this->fileUploadService->handleMultipleUploads(
-                    $request->file('files'),
-                    'motors'
-                );
-            } elseif (isset($validated['files']) && is_array($validated['files'])) {
-                // JSON file data upload
-                $this->jsonFileUploadService->deleteMultipleFiles($motor->files ?? []);
-                $uploadedFiles = $this->jsonFileUploadService->handleJsonFileUploads(
+            if (isset($validated['files']) && is_array($validated['files'])) {
+                
+                // Process new files
+                $newUploadedFiles = $this->jsonFileUploadService->handleJsonFileUploads(
                     $validated['files'],
                     'motors'
                 );
+
+                if (!empty($validated['files']) && empty($newUploadedFiles)) {
+                    return back()->withErrors(['files' => 'Gagal mengupload file. Pastikan file valid.']);
+                }
+
+                // Determine which old files to delete
+                $filesToDelete = $this->jsonFileUploadService->getFilesToDelete($oldFiles, $newUploadedFiles);
+                
+                Log::info('Files to delete', [
+                    'files_to_delete_count' => count($filesToDelete),
+                    'files_to_delete' => $filesToDelete
+                ]);
+
+                // Delete old files that are no longer needed
+                if (!empty($filesToDelete)) {
+                    $this->jsonFileUploadService->deleteMultipleFiles($filesToDelete);
+                }
+
+                $uploadedFiles = $newUploadedFiles;
             }
 
-            if (isset($validated['files']) && empty($uploadedFiles)) {
-                return back()->withErrors(['files' => 'Gagal mengupload file. Pastikan file valid.']);
-            }
-
+            // Update motor data
             $motor->update([
                 ...$validated,
                 'files' => $uploadedFiles,
@@ -178,10 +194,18 @@ class MotorController extends Controller
                 ? "Motor berhasil diupdate dengan {$fileCount} file."
                 : "Motor berhasil diupdate.";
 
+            Log::info('Motor updated successfully', [
+                'motor_id' => $motor->id,
+                'final_files_count' => count($uploadedFiles)
+            ]);
+
             return redirect()->route('dashboard.motor.index')->with('success', $message);
 
         } catch (\Exception $e) {
-            Log::error('Motor update error: ' . $e->getMessage());
+            Log::error('Motor update error: ' . $e->getMessage(), [
+                'motor_id' => $motor->id,
+                'stack_trace' => $e->getTraceAsString()
+            ]);
             return back()->withErrors(['error' => 'Terjadi kesalahan saat mengupdate data: ' . $e->getMessage()]);
         }
     }
@@ -196,16 +220,32 @@ class MotorController extends Controller
         }
 
         try {
-            $this->jsonFileUploadService->deleteMultipleFiles($motor->files ?? []);
+            Log::info('Deleting motor', [
+                'motor_id' => $motor->id,
+                'files_count' => count($motor->files ?? [])
+            ]);
+
+            // Delete all associated files first
+            if (!empty($motor->files)) {
+                $this->jsonFileUploadService->deleteMultipleFiles($motor->files);
+                Log::info('Files deleted for motor', ['motor_id' => $motor->id]);
+            }
+
+            // Then delete the motor record
             $motor->delete();
+
+            Log::info('Motor deleted successfully', ['motor_id' => $motor->id]);
 
             return redirect()->route('dashboard.motor.index')
                 ->with('success', 'Motor berhasil dihapus beserta semua file terkait.');
 
         } catch (\Exception $e) {
-            Log::error('Motor deletion error: ' . $e->getMessage());
+            Log::error('Motor deletion error: ' . $e->getMessage(), [
+                'motor_id' => $motor->id,
+                'stack_trace' => $e->getTraceAsString()
+            ]);
             return redirect()->route('dashboard.motor.index')
-                ->with('error', 'Terjadi kesalahan saat menghapus data.');
+                ->with('error', 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage());
         }
     }
 }
