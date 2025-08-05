@@ -3,6 +3,7 @@ import { DataTable } from "@/components/ui/fragments/table/data-table";
 import { columns } from "@/components/ui/fragments/table/motor-columns";
 import { Filters } from "@/types/index";
 import { MotorSchema } from "@/lib/validations";
+import { columnsMobils } from "@/components/ui/fragments/table/mobil-column";
 
 interface PaginatedData {
     data: MotorSchema[];
@@ -21,7 +22,7 @@ interface PaginatedData {
 type PageProps = {
     pagination: PaginatedData;
  
-    motor:MotorSchema[]
+    mobil:MotorSchema[]
     filters: Filters,
       flash?: {
         success?: string;
@@ -29,7 +30,7 @@ type PageProps = {
       };
 }
 
-export default function Pages({  motor, pagination, filters} : PageProps) {
+export default function Pages({  mobil, pagination, filters} : PageProps) {
     return (
         <>
 
@@ -41,15 +42,15 @@ export default function Pages({  motor, pagination, filters} : PageProps) {
 
 
                         <header className="flex flex-col gap-0.5">
-    <h2 className="text-3xl font-bold tracking-tight font-sans">Motor Management</h2>
-    <p className="text-muted-foreground">Here is your Motor list. Manage your Motor here.</p>
+    <h2 className="text-3xl font-bold tracking-tight font-sans">Mobil Management</h2>
+    <p className="text-muted-foreground">Here is your Mobil list. Manage your Mobil here.</p>
   </header>
 
             <DataTable 
-                            nas="Motor"
+                            nas="Mobil"
                         
-                            data={motor}
-                            columns={columns}
+                            data={mobil}
+                            columns={columnsMobils}
                             pagination={pagination}
                             filters={filters}  
             />

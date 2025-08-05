@@ -21,8 +21,8 @@ import { DeleteTasksDialog } from "../../fragments/table/delete-task-dialog"
 import React from "react"
 import { router, usePage } from "@inertiajs/react"
 import { toast } from "sonner"
-import { UpdateTaskSheet } from "../sheet/update-motor-sheet"
-import { MotorSchema } from "@/lib/validations"
+import { UpdateMobilSheet} from "../sheet/update-mobil-sheet"
+import { MobilSchema } from "@/lib/validations"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -33,7 +33,7 @@ export function DataTableRowActions<TData>({
   row,
 
 }: DataTableRowActionsProps<TData>) {
-  const task = row.original as MotorSchema;
+  const task = row.original as MobilSchema;
   const [openUpdate, setOpenUpdate] = React.useState(false)
   const [openModal, setOpenModal] = React.useState(false)
   const [processing, setProcessing] = React.useState(false);
@@ -44,7 +44,7 @@ const currentPath = usePage().url
       setProcessing(true);
       
 const id: number[] = [taskId] 
-          toast.loading("Motor deleting...",  { id: "motor-delete" });
+          toast.loading("Mobil deleting...",  { id: "mobil-delete" });
       router.delete(route(`dashboard.${pathNames}.destroy`, id), {
         data: { ids: id } ,
         preserveScroll: true,
@@ -53,13 +53,13 @@ const id: number[] = [taskId]
           setProcessing(true);
         },
         onSuccess: () => {
-          toast.success("Motor deleted successfully",  { id: "motor-delete" });
+          toast.success("Mobil deleted successfully",  { id: "mobil-delete" });
           setOpenModal(false);
-          router.reload(); // Memaksa refresh data dari server
+          router.reload(); 
         },
         onError: (errors: any) => {
           console.error("Delete error:", errors);
-          toast.error(errors?.message || "Failed to delete the motor" , { id: "motor-delete" });
+          toast.error(errors?.message || "Failed to delete the mobil" , { id: "mobil-delete" });
         },
         onFinish: () => {
           setProcessing(false);
@@ -67,7 +67,7 @@ const id: number[] = [taskId]
       });
     } catch (error) {
       console.error("Delete operation error:", error);
-      toast.error("An unexpected error occurred",  { id: "motor-delete" });
+      toast.error("An unexpected error occurred",  { id: "mobil-delete" });
       setProcessing(false);
     }
   };
@@ -93,7 +93,7 @@ const id: number[] = [taskId]
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-          <UpdateTaskSheet
+          <UpdateMobilSheet
          
                   task={task }
                   open={openUpdate} 

@@ -6,7 +6,7 @@ import { SectionCards } from './section-card'
 // import {getroomsCapacityCounts, getRoomsStatusCounts, getroomsTypeCounts} from "@/queries/rooms/data-table-rooms-queris";
 // import {  getEmployesCountsByDate } from '@/queries/employee/dashboard-employee-queris';
 // import { getMotorStatusCounts, getEmployesGenderCounts, getEmployesRoleCounts } from '@/queries/employee/data-table-employee-queries';
-import { Bike, BriefcaseBusiness, Building2,  CircleFadingArrowUp,  DoorOpen, UsersRound } from "lucide-react";
+import { Bike, BriefcaseBusiness, Building2,  CarIcon,  CircleFadingArrowUp,  DoorOpen, UsersRound } from "lucide-react";
 // import {  TabsContent } from '@/components/ui/fragments/tabs'
 // import { ChartBarInteractive } from './chart/chart-bar-interactive';
 // import { ChartPie } from './chart/chart-pie-donut-text';
@@ -72,6 +72,20 @@ const dataCards: DataCard[] = [
       icon: CircleFadingArrowUp,
       label: "Terjual"
     },
+    {
+      title: "Total Mobil",
+      description: "This is total of your Mobil ",
+      value: reports["totalMobil"],
+      icon: CarIcon,
+      label: "Terjual"
+    },
+    {
+      title: "Mobil Terjual",
+      description: "This is total of your Mobil  sold out ",
+      value: reports["totalMobil"],
+      icon: CircleFadingArrowUp,
+      label: "Terjual"
+    },
     // {
     //   title: "Total Rooms",
     //   description: "This is total of your rooms ",
@@ -116,12 +130,12 @@ const dataCards: DataCard[] = [
               } />
                             <ChartPie showFooter={false} title='Motor Distribution - Gender' description='Current motor count by status' footerDeskripcion={"Showing total motor by the status distribution"}  className='    col-span-2 lg:col-span-1 ' data={reports.statusCount}  nameKey='Motor'/>
                
-                      <ChartPie showFooter className='    col-span-2 lg:col-span-1 ' title='Motor Distribution - Merek Status' footerDeskripcion={"Showing total mess by the Capacity Status distribution"} description='Current mess count by capacity status' data={reports.merekCount} nameKey='Motor'/>
+                      <ChartPie showFooter className='    col-span-2 lg:col-span-1 ' title='Motor Distribution - Merek Status' footerDeskripcion={"Showing total motor by the merek distribution"} description='Current motor count by merek' data={reports.merekCount} nameKey='Motor'/>
                     <ChartBarActive className='    col-span-2 lg:col-span-1 '  data={reports.countsHighest
               }/>
 
 
-<ChartPie showFooter className='    col-span-2 lg:col-span-1 ' title='Motor Distribution - Kategori Status' footerDeskripcion={"Showing total mess by the  kategori"} description='Current mess count by capacity status' data={reports.kategoriCount} nameKey='Motor'/>
+<ChartPie showFooter className='    col-span-2 lg:col-span-1 ' title='Motor Distribution - Kategori Status' footerDeskripcion={"Showing total motor by the  kategori"} description='Current mess count by capacity status' data={reports.kategoriCount} nameKey='Motor'/>
             {/* <ChartPie className='    col-span-2 lg:col-span-1 ' data={EmployesRoleCounts}/> */}
                  
 </div>

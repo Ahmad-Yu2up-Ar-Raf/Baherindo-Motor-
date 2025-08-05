@@ -18,7 +18,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/fragments/sheet";
 import { TaskForm } from "../forms/motor-form";
-import { motorSchema , type MotorSchema } from "@/lib/validations";
+import { mobilSchema , type MobilSchema } from "@/lib/validations";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
@@ -34,7 +34,7 @@ import {
 import { router } from "@inertiajs/react";
 import { FileUploadRef } from "../../fragments/file-uploud";
 import { cn } from "@/lib/utils";
-import { KATEGORI_MOTOR, MEREK_MOTOR } from "@/config/enum-type";
+import { KATEGORI_MOBIL, MEREK_MOBIL } from "@/config/enum-type";
 
 interface type  extends React.ComponentPropsWithRef<typeof Sheet>{
   trigger? : boolean
@@ -42,7 +42,7 @@ interface type  extends React.ComponentPropsWithRef<typeof Sheet>{
 }
 
 
-export function CreateTaskSheet({ ...props}: type) {
+export function CreateMobilSheet({ ...props}: type) {
 
   const [isPending, startTransition] = React.useTransition();
   const [loading, setLoading] = React.useState(false);  
@@ -52,7 +52,7 @@ export function CreateTaskSheet({ ...props}: type) {
   const setIsOpen = props.onOpenChange || setInternalOpen
   const isDesktop = useIsMobile();
 
-  const form = useForm<MotorSchema>({
+  const form = useForm<MobilSchema>({
     mode: "onSubmit", 
     defaultValues: {
      name: "",
@@ -62,10 +62,10 @@ export function CreateTaskSheet({ ...props}: type) {
        warna: "",
        deskripsi: "",
       },
-    resolver: zodResolver(motorSchema),
+    resolver: zodResolver(mobilSchema),
   }) 
 
-function onSubmit(input: MotorSchema) {
+function onSubmit(input: MobilSchema) {
    
     
     // Validasi apakah semua files memiliki base64Data
@@ -75,8 +75,8 @@ function onSubmit(input: MotorSchema) {
       return;
     }
 
-    toast.loading("Motor creating....", {
-      id: "create-motor"
+    toast.loading("Mobil creating....", {
+      id: "create-mobil"
     });
     
   startTransition(() => {
@@ -86,22 +86,22 @@ function onSubmit(input: MotorSchema) {
 
 
 
-    router.post(route(`dashboard.motor.store`), input, { 
+    router.post(route(`dashboard.mobil.store`), input, { 
       preserveScroll: true,
       preserveState: true,
 
       onSuccess: () => {
         form.reset();
         setIsOpen(false);
-        toast.success("Motor created successfully", {
-          id: "create-motor"
+        toast.success("Mobil created successfully", {
+          id: "create-mobil"
         });
         setLoading(false);
       },
       onError: (error) => {
         console.error("Submit error:", error);
         toast.error(`Error: ${Object.values(error).join(', ')}`, {
-          id: "create-motor"
+          id: "create-mobil"
         });
         setLoading(false);
       },
@@ -125,12 +125,12 @@ if (!isDesktop) {
       </SheetTrigger>
       <SheetContent className="flex flex-col gap-6 overflow-y-scroll ">
         <SheetHeader className="text-left sm:px-6 space-y-1 bg-background z-30  sticky top-0   p-4 border-b  ">
-          <SheetTitle className=" text-lg">Add New <Button type="button"   variant={"outline"} className=" ml-2  px-2.5 text-base capitalize">Motor</Button> </SheetTitle>
+          <SheetTitle className=" text-lg">Add New <Button type="button"   variant={"outline"} className=" ml-2  px-2.5 text-base capitalize">Mobil</Button> </SheetTitle>
           <SheetDescription className=" sr-only">
             Fill in the details below to create a new task
           </SheetDescription>
         </SheetHeader>
-        <TaskForm isPending={loading} form={form} Merek={MEREK_MOTOR} Kategori={KATEGORI_MOTOR} fileUploadRef={fileUploadRef}  onSubmit={onSubmit}>
+        <TaskForm type="mobil" isPending={loading} form={form} Merek={MEREK_MOBIL} Kategori={KATEGORI_MOBIL} fileUploadRef={fileUploadRef}  onSubmit={onSubmit}>
           <SheetFooter className="gap-3 px-3 py-4 w-full flex-row justify-end  flex  border-t sm:space-x-0">
             <SheetClose disabled={loading} asChild onClick={() => form.reset()}>
               <Button  disabled={loading} type="button" className="  w-fit" size={"sm"} variant="outline">
@@ -159,13 +159,13 @@ return(
       </DrawerTrigger>
       <DrawerContent className="flex flex-col  ">
         <DrawerHeader className="text-left sm:px-6 space-y-1 bg-background    p-4 border-b  ">
-        <DrawerTitle className=" text-xl">Add New <Button type="button"   variant={"outline"} className=" ml-2  px-2.5 text-base">motor</Button> </DrawerTitle>
+        <DrawerTitle className=" text-xl">Add New <Button type="button"   variant={"outline"} className=" ml-2  px-2.5 text-base">mobil</Button> </DrawerTitle>
               <DrawerDescription className=" text-sm">
                              Fill in the details below to create a new task
                        </DrawerDescription>
         </DrawerHeader>
 
-         <TaskForm   isPending={loading} form={form}  Merek={MEREK_MOTOR} Kategori={KATEGORI_MOTOR} fileUploadRef={fileUploadRef}  onSubmit={onSubmit}>
+         <TaskForm   type="mobil" isPending={loading} form={form}  Merek={MEREK_MOBIL} Kategori={KATEGORI_MOBIL} fileUploadRef={fileUploadRef}  onSubmit={onSubmit}>
         <DrawerFooter className="gap-3 px-3 py-4 w-full flex-row justify-end  flex  border-t sm:space-x-0">
              <DrawerClose disabled={loading} asChild onClick={() => form.reset()}>
                             <Button  disabled={loading} type="button" className="  w-fit" size={"sm"} variant="outline">

@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import type { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
-import { MEREK_MOTOR, KATEGORI_MOTOR, STATUS_MOTOR } from "@/config/enum-type";
+import { MEREK_MOTOR, KATEGORI_MOTOR, STATUS_MOTOR, OptionItem } from "@/config/enum-type";
 import {
   Form,
   FormControl,
@@ -14,14 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/fragments/form";
 import { Input } from "@/components/ui/fragments/input";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList
-} from "@/components/ui/fragments/command"
+
 import { cn } from "@/lib/utils";
 
 import {  MotorSchema } from "@/lib/validations";
@@ -36,6 +29,9 @@ interface TaskFormProps<T extends FieldValues, >
   form: UseFormReturn<T>;
   onSubmit: (data: T) => void;
   isPending: boolean;
+  type: 'motor' | 'mobil'
+  Merek: OptionItem[]
+  Kategori: OptionItem[]
   initialFiles?: FileWithPreview[] | undefined
   currentKelas?: MotorSchema;
   fileUploadRef: React.RefObject<FileUploadRef | null>
@@ -63,7 +59,10 @@ import KilometerInput from "../../fragments/kilometer-input";
 export function TaskForm<T extends FieldValues, >({
   form,
   onSubmit,
+  type = 'motor',
    fileUploadRef,
+   Merek ,
+   Kategori,
   children,
   initialFiles,
   isPending,
@@ -95,13 +94,13 @@ export function TaskForm<T extends FieldValues, >({
                   <FormControl>
                     <Input 
                 
-                      placeholder="motor name"
+                      placeholder={`${type} name`}
                       type="text"
                       disabled={isPending}
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription className=" sr-only">Your Motor name.</FormDescription>
+                  <FormDescription className=" sr-only">{`Your ${type} name.`}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -115,7 +114,7 @@ export function TaskForm<T extends FieldValues, >({
           disable={isPending}
           label="Harga"
           name="harga"
-          placeholder="Harga Motor"
+          placeholder={`Harga ${type}`}
         />
             
        
@@ -161,7 +160,7 @@ export function TaskForm<T extends FieldValues, >({
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription className=" sr-only">Plat Nomor Motor.</FormDescription>
+                  <FormDescription className=" sr-only">{`Plat Nomor  ${type}.`}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -176,13 +175,13 @@ export function TaskForm<T extends FieldValues, >({
                   <FormControl>
                     <Input 
                 
-                      placeholder="motor name"
+                      placeholder={`${type} name`}
                       type="number"
                       disabled={isPending}
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription className=" sr-only">Your Motor name.</FormDescription>
+                  <FormDescription className=" sr-only">{`Your ${type} name.`}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -227,7 +226,7 @@ export function TaskForm<T extends FieldValues, >({
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription className=" sr-only">Your Motor name.</FormDescription>
+                  <FormDescription className=" sr-only">{`Your ${type} name.`}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -248,7 +247,7 @@ export function TaskForm<T extends FieldValues, >({
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription className="sr-only">Motor deskripsion</FormDescription>
+                    <FormDescription className="sr-only">{`${type} deskripsion`}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -260,7 +259,7 @@ export function TaskForm<T extends FieldValues, >({
           disable={isPending}
           label="DP Minimum"
           name="dp_minimum"
-          placeholder="dp motor"
+          placeholder={`dp ${type}`}
         />
 
    
@@ -315,17 +314,19 @@ export function TaskForm<T extends FieldValues, >({
                   <FormControl>
                     <Input 
                 
-                      placeholder="motor warna"
+                      placeholder={`${type} warna`}
                       type="text"
                       disabled={isPending}
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription className=" sr-only">Warna motor.</FormDescription>
+                  <FormDescription className=" sr-only">Warna type.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+
 
 
 
@@ -342,7 +343,7 @@ export function TaskForm<T extends FieldValues, >({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {KATEGORI_MOTOR.map((item,i ) => (
+                  {Kategori.map((item,i ) => (
 
                   <SelectItem key={i} value={item.value}>{item.label}</SelectItem>
                   ))}
@@ -354,6 +355,35 @@ export function TaskForm<T extends FieldValues, >({
             </FormItem>
           )}
         />
+
+
+<FormField
+          control={form.control}
+          name={"merek" as FieldPath<T>}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Merek</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {Merek.map((item,i ) => (
+
+                  <SelectItem key={i} value={item.value}>{item.label}</SelectItem>
+                  ))}
+                  
+                </SelectContent>
+              </Select>
+                <FormDescription className=" sr-only">You can manage email addresses in your email settings.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+
 <FormField
           control={form.control}
           name={"status" as FieldPath<T>}
@@ -379,31 +409,7 @@ export function TaskForm<T extends FieldValues, >({
             </FormItem>
           )}
         />
-<FormField
-          control={form.control}
-          name={"merek" as FieldPath<T>}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Merek</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {MEREK_MOTOR.map((item,i ) => (
 
-                  <SelectItem key={i} value={item.value}>{item.label}</SelectItem>
-                  ))}
-                  
-                </SelectContent>
-              </Select>
-                <FormDescription className=" sr-only">You can manage email addresses in your email settings.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
 
 

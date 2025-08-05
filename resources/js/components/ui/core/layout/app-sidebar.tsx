@@ -7,6 +7,7 @@ import {
   BookOpen,
   Bot,
   Car,
+  CarIcon,
   Command,
   DoorOpen,
   Frame,
@@ -66,39 +67,22 @@ import { usePage } from "@inertiajs/react";
         icon: LayoutDashboardIcon,
         isActive: false,
       },
-      // {
-      //   title: "About",
-      //   url: "/dashboard/about",
-      //   icon: UsersRound,
-      //   isActive: false,
-      // },
-      // {
-      //   title: "Siswa",
-      //   url: "/dashboard/siswa",
-      //   icon: UsersRound,
-      //   isActive: false,
-      // },
-      // {
-      //   title: "Kelas",
-      //   url: "/dashboard/kelas",
-      //   icon: DoorOpen,
-      //   isActive: false,
-      // },
+
       {
         title: "Motor",
         url: "/dashboard/motor",
         icon: Bike,
         isActive: false,
       },
+      {
+        title: "Mobil",
+        url: "/dashboard/mobil",
+        icon: CarIcon,
+        isActive: false,
+      },
 
     ],
-    // projects: [
-    //   {
-    //     name: "Inventory",
-    //     url: "/dashboard/inventory",
-    //     icon: Frame,
-    //   },
-    // ],
+
     navSecondary: [
       {
         title: "Support",

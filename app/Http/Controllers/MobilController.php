@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreMotorRequest;
-use App\Http\Requests\UpdateMotorRequest;
-use App\Models\Motor;
+use App\Http\Requests\CreateMobilRequest;
+use App\Http\Requests\UpdateMobilRequest;
+use App\Models\Mobil;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
-class MotorController extends Controller
+class MobilController extends Controller
 {
+
+
     protected $fileUploadService;
 
     public function __construct(FileUploadService $fileUploadService)
@@ -30,7 +32,7 @@ class MotorController extends Controller
         $search = $request->input('search');
         $merek = $request->input('merek');
         $kategori = $request->input('kategori');
-        $query = Motor::where('user_id', Auth::id());
+        $query = Mobil::where('user_id', Auth::id());
 
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -47,9 +49,9 @@ class MotorController extends Controller
             $query->where('kategori', $kategori);
         }
 
-        $motor = $query->orderBy('created_at', 'desc')->paginate($perPage);
+        $mobil = $query->orderBy('created_at', 'desc')->paginate($perPage);
             
-        $motor->through(function($item) {
+        $mobil->through(function($item) {
             $files = $item->files ?? [];
             $filesWithUrls = array_map(function($file) {
                 if (isset($file['file_path'])) {
@@ -64,17 +66,17 @@ class MotorController extends Controller
             ];
         });
 
-        return Inertia::render('dashboard/motor', [
-            'motor' => $motor->items() ?? [],
+        return Inertia::render('dashboard/mobil', [
+            'mobil' => $mobil->items() ?? [],
             'mereks' => [
                 'search' => request('search', ''),
             ],
             'pagination' => [
-                'data' => $motor->toArray(),
-                'total' => $motor->total(),
-                'currentPage' => $motor->currentPage(),
-                'perPage' => $motor->perPage(),
-                'lastPage' => $motor->lastPage(),
+                'data' => $mobil->toArray(),
+                'total' => $mobil->total(),
+                'currentPage' => $mobil->currentPage(),
+                'perPage' => $mobil->perPage(),
+                'lastPage' => $mobil->lastPage(),
             ],
             'flash' => [
                 'success' => session('success'),
@@ -84,27 +86,35 @@ class MotorController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreMotorRequest $request)
+    public function store(CreateMobilRequest $request)
     {
         try {
             // Observer akan handle file upload secara otomatis
-            $motor = Motor::create([
+            $mobil = Mobil::create([
                 ...$request->validated(),
                 'user_id' => Auth::id()
             ]);
 
-            $fileCount = count($motor->files ?? []);
+            $fileCount = count($mobil->files ?? []);
             $message = $fileCount > 0 
-                ? "Motor berhasil ditambahkan dengan {$fileCount} file."
-                : "Motor berhasil ditambahkan.";
+                ? "Mobil berhasil ditambahkan dengan {$fileCount} file."
+                : "Mobil berhasil ditambahkan.";
 
-            return redirect()->route('dashboard.motor.index')
+            return redirect()->route('dashboard.mobil.index')
                 ->with('success', $message);
 
         } catch (\Exception $e) {
-            Log::error('Motor creation error: ' . $e->getMessage());
+            Log::error('Mobil creation error: ' . $e->getMessage());
             
             return back()->withErrors([
                 'error' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()
@@ -113,29 +123,46 @@ class MotorController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(Mobil $mobil)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Mobil $mobil)
+    {
+        //
+    }
+
+    /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMotorRequest $request, Motor $motor)
+    public function update(UpdateMobilRequest $request, Mobil $mobil)
     {
         try {
             // Observer akan handle file upload dan delete file lama secara otomatis
-            $motor->update($request->validated());
+            $mobil->update($request->validated());
 
-            $fileCount = count($motor->files ?? []);
+            $fileCount = count($mobil->files ?? []);
             $message = request()->hasFile('files') || request()->has('files')
-                ? "Motor berhasil diupdate dengan {$fileCount} file."
-                : "Motor berhasil diupdate.";
+                ? "Mobil berhasil diupdate dengan {$fileCount} file."
+                : "Mobil berhasil diupdate.";
 
-            return redirect()->route('dashboard.motor.index')
+            return redirect()->route('dashboard.mobil.index')
                 ->with('success', $message);
 
         } catch (\Exception $e) {
-            Log::error('Motor update error: ' . $e->getMessage());
+            Log::error('Mobil update error: ' . $e->getMessage());
             return back()->withErrors([
                 'error' => 'Terjadi kesalahan saat mengupdate data: ' . $e->getMessage()
             ]);
         }
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -144,35 +171,35 @@ class MotorController extends Controller
     {
         $ids = $request->input('ids');
         if (empty($ids)) {
-            return redirect()->route('dashboard.motor.index')
-                ->with('error', 'Tidak ada motor yang dipilih untuk dihapus.');
+            return redirect()->route('dashboard.mobil.index')
+                ->with('error', 'Tidak ada mobil yang dipilih untuk dihapus.');
         }
 
         // Validasi apakah semua ID milik user yang sedang login
-        $motors = Motor::whereIn('id', $ids)->where('user_id', Auth::id())->get();
-        if ($motors->count() !== count($ids)) {
-            return redirect()->route('dashboard.motor.index')
-                ->with('error', 'Unauthorized access atau motor tidak ditemukan.');
+        $mobils = Mobil::whereIn('id', $ids)->where('user_id', Auth::id())->get();
+        if ($mobils->count() !== count($ids)) {
+            return redirect()->route('dashboard.mobil.index')
+                ->with('error', 'Unauthorized access atau mobil tidak ditemukan.');
         }
 
         try {
             DB::beginTransaction();
             
             // SOLUSI: Delete satu per satu agar Observer terpicu
-            foreach ($motors as $motor) {
-                $motor->delete(); // Ini akan trigger observer events
+            foreach ($mobils as $mobil) {
+                $mobil->delete(); // Ini akan trigger observer events
             }
             
             DB::commit();
 
-            $deletedCount = $motors->count();
-            return redirect()->route('dashboard.motor.index')
-                ->with('success', "{$deletedCount} Motor berhasil dihapus beserta semua file terkait.");
+            $deletedCount = $mobils->count();
+            return redirect()->route('dashboard.mobil.index')
+                ->with('success', "{$deletedCount} Mobil berhasil dihapus beserta semua file terkait.");
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Motor deletion error: ' . $e->getMessage());
-            return redirect()->route('dashboard.motor.index')
+            Log::error('Mobil deletion error: ' . $e->getMessage());
+            return redirect()->route('dashboard.mobil.index')
                 ->with('error', 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage());
         }
     }

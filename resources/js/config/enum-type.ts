@@ -28,7 +28,7 @@ export const STATUS_MOTOR: OptionItem[] = [
 
 // Merek Motor
 export const MEREK_MOTOR: OptionItem[] = [
-  // Japanese Brands
+  
   { value: 'honda', label: 'Honda', country: 'Japan' },
   { value: 'yamaha', label: 'Yamaha', country: 'Japan' },
   { value: 'kawasaki', label: 'Kawasaki', country: 'Japan' },
@@ -54,6 +54,30 @@ export const MEREK_BY_COUNTRY: GroupedOptions = {
     { value: 'other', label: 'Lainnya' }
   ]
 };
+
+
+
+
+export const KATEGORI_MOBIL: OptionItem[] = [
+  { value: 'mpv', label: 'MPV' },
+  { value: 'suv', label: 'SUV' },
+  { value: 'hatchback', label: 'Hatchback' },
+  { value: 'sedan', label: 'Sedan' },
+  { value: 'other', label: 'Lainnya' }
+];
+
+
+
+// Merek Mobil
+export const MEREK_MOBIL: OptionItem[] = [
+  // Japanese Brands - 4 Merek Dominan
+  { value: 'toyota', label: 'Toyota', country: 'Japan' },
+  { value: 'daihatsu', label: 'Daihatsu', country: 'Japan' },
+  { value: 'honda', label: 'Honda', country: 'Japan' },
+  { value: 'suzuki', label: 'Suzuki', country: 'Japan' },
+  { value: 'other', label: 'Lainnya', country: 'Other' }
+];
+
 
 // Utility functions
 export const getKategoriLabel = (value: string): string => {
@@ -85,7 +109,30 @@ export const FormSelectOptions = {
 // Export types for form handling
 export type KategoriValue = typeof KATEGORI_MOTOR[number]['value'];
 export type MerekValue = typeof MEREK_MOTOR[number]['value'];
+export type KategoriValueMobil = typeof KATEGORI_MOBIL[number]['value'];
+export type MerekValueMobil = typeof MEREK_MOBIL[number]['value'];
 export type StatusValue = typeof STATUS_MOTOR[number]['value'];
+
+
+export const KategoriType : string[] = KATEGORI_MOTOR.map(function(item) {
+  return item['value'];
+});
+export const KategoriTypeMobil : string[] = KATEGORI_MOBIL.map(function(item) {
+  return item['value'];
+});
+export const StatusType : string[] = STATUS_MOTOR.map(function(item) {
+  return item['value'];
+});
+
+export const MerekType : string[] =  MEREK_MOTOR.map(function(item) {
+  return item['value'];
+});
+
+export const MerekTypeMobil : string[] =  MEREK_MOBIL.map(function(item) {
+  return item['value'];
+});
+
+
 
 export default {
   KATEGORI_MOTOR,
@@ -95,5 +142,7 @@ export default {
   getMerekLabel,
   getMerekCountry,
   getMereksByCountry,
+  MEREK_MOBIL,
+  KATEGORI_MOBIL,
   FormSelectOptions
 };

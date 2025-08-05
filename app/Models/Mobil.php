@@ -2,27 +2,26 @@
 
 namespace App\Models;
 
-use App\Enums\Kategori;
-use App\Enums\Merek;
+use App\Enums\KategoriMobil;
+
+use App\Enums\MobilMerek;
 use App\Enums\Status;
-use App\Observers\MotorObserver;
+use App\Observers\MobilObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-
-
-#[ObservedBy(MotorObserver::class)]
-class Motor extends Model
+#[ObservedBy(MobilObserver::class)]
+class Mobil extends Model
 {
+
     use HasFactory;
 
-    protected $table = 'motors';
- 
- 
- 
-       protected $fillable = [   
+    protected $table = 'mobils';
+
+
+    protected $fillable = [   
         'name',
         'harga',
         'user_id',
@@ -55,35 +54,34 @@ class Motor extends Model
    'deskripsi' => 'string',
    'url' => 'string',
    'files' => 'array',
-   'merek' => Merek::class,
+   'merek' => MobilMerek::class,
    'status' => Status::class,
-   'kategori' => Kategori::class,
+   'kategori' => KategoriMobil::class,
      ]; 
  
-  
- 
- 
-   public function user(): BelongsTo
+
+     public function user(): BelongsTo
      {
          return $this->belongsTo(User::class);
      }
  
+
+
+     public function getFormattedPriceAttribute()
+     {
+         return 'Rp ' . number_format($this->harga, 0, ',', '.');
+     }
  
+     /**
+      * Method untuk format DP minimum
+      */
+     public function getFormattedDpAttribute()
+     {
+         if (!$this->dp_minimum) {
+             return null;
+         }
+         
+         return 'Rp ' . number_format($this->dp_minimum, 0, ',', '.');
+     }
 
-   public function getFormattedPriceAttribute()
-    {
-        return 'Rp ' . number_format($this->harga, 0, ',', '.');
-    }
-
-    /**
-     * Method untuk format DP minimum
-     */
-    public function getFormattedDpAttribute()
-    {
-        if (!$this->dp_minimum) {
-            return null;
-        }
-        
-        return 'Rp ' . number_format($this->dp_minimum, 0, ',', '.');
-    }
 }

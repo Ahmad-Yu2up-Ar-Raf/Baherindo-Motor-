@@ -17,7 +17,7 @@ import {
   SheetTitle,
 } from "@/components/ui/fragments/sheet";
 
-import { MotorSchema, motorSchema } from "@/lib/validations";
+import { MobilSchema, mobilSchema } from "@/lib/validations";
 import { TaskForm } from "../forms/motor-form";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
@@ -32,20 +32,21 @@ import {
 import { FileUploadRef } from "../../fragments/file-uploud";
 import { FileWithPreview } from "@/hooks/use-file-upload";
 import { router } from "@inertiajs/react";
-import { base64 } from "zod";
+import { KATEGORI_MOBIL, MEREK_MOBIL } from "@/config/enum-type";
+
 
 interface UpdateTaskSheetProps
   extends React.ComponentPropsWithRef<typeof Sheet> {
-  task: MotorSchema | null;
+  task: MobilSchema | null;
 }
 
-export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
+export function UpdateMobilSheet({ task, ...props }: UpdateTaskSheetProps) {
   const [isPending, startTransition] = React.useTransition();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   
   const fileUploadRef = React.useRef<FileUploadRef>(null)
-  const form = useForm<MotorSchema>({
+  const form = useForm<MobilSchema>({
     mode: "onSubmit",
     defaultValues: {
       name: task?.name,
@@ -64,7 +65,7 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
 
       status: task?.status,
     },
-    resolver: zodResolver(motorSchema),
+    resolver: zodResolver(mobilSchema),
   });
 
 
@@ -91,7 +92,7 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
     }
   }, [task, form]);
 
-  function onSubmit(input: MotorSchema) {
+  function onSubmit(input: MobilSchema) {
     if (!task) {
       toast.error("Task data not found");
       return;
@@ -121,7 +122,7 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
 
   
 
-        router.post(route('dashboard.motor.update', task.id), formData, {
+        router.post(route('dashboard.mobil.update', task.id), formData, {
           preserveScroll: true,
           preserveState: true,
           forceFormData: true,
@@ -130,13 +131,13 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
           },
           onStart: (visit) => {
             console.log('Update request started');
-            toast.loading('Updating motor data...', { id: 'update-toast' });
+            toast.loading('Updating mobil data...', { id: 'update-toast' });
           },
           onSuccess: (page) => {
             console.log('Update success response:', page);
             setLoading(false);
             props.onOpenChange?.(false);
-            toast.success('Motor updated successfully', { id: 'update-toast' });
+            toast.success('Mobil updated successfully', { id: 'update-toast' });
             form.reset();
           },
           onError: (errors) => {
@@ -162,7 +163,7 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
                 }
               });
             } else {
-              toast.error('Failed to update motor data', { id: 'update-toast' });
+              toast.error('Failed to update mobil data', { id: 'update-toast' });
             }
           },
           onFinish: () => {
@@ -173,7 +174,7 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
         });
         
       } catch (error) {
-        toast.error("Failed to update motor", { id: "motor-updated" });
+        toast.error("Failed to update mobil", { id: "mobil-updated" });
         setIsSubmitting(false);
         setLoading(false);
       }
@@ -193,7 +194,7 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
                      Fill in the details below to update the task
                    </SheetDescription>
                  </SheetHeader>
-          <TaskForm<MotorSchema> form={form}  type="mobil" onSubmit={onSubmit} isPending={loading} initialFiles={task?.files! as FileWithPreview[]} fileUploadRef={fileUploadRef} >
+          <TaskForm<MobilSchema> form={form} onSubmit={onSubmit} isPending={loading} initialFiles={task?.files! as FileWithPreview[]} fileUploadRef={fileUploadRef} >
             <SheetFooter className="gap-3 px-3 py-4 w-full flex-row justify-end  flex  border-t sm:space-x-0">
                       <SheetClose disabled={loading} asChild onClick={() => form.reset()}>
                         <Button  disabled={loading} type="button" className="  w-fit" size={"sm"} variant="outline">
@@ -221,7 +222,7 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
                      Fill in the details below to update the task
                    </DrawerDescription>
     </DrawerHeader>
-      <TaskForm<MotorSchema>  form={form}  type="mobil" onSubmit={onSubmit} isPending={loading} fileUploadRef={fileUploadRef}  initialFiles={task?.files!  as FileWithPreview[]}   >
+      <TaskForm<MobilSchema>  form={form} onSubmit={onSubmit} isPending={loading}  Merek={MEREK_MOBIL} Kategori={KATEGORI_MOBIL}  fileUploadRef={fileUploadRef}   initialFiles={task?.files!  as FileWithPreview[]}   >
     <DrawerFooter className="gap-3 px-3 py-4 w-full flex-row justify-end  flex  border-t sm:space-x-0">
          <DrawerClose disabled={loading} asChild onClick={() => form.reset()}>
                         <Button  disabled={loading} type="button" className="  w-fit" size={"sm"} variant="outline">

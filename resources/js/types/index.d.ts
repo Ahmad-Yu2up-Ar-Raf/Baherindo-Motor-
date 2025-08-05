@@ -94,6 +94,8 @@ export interface HighesCount {
 export interface Reports {
     totalMotor: number
     totalMotorTerjual: number
+    totalMobil: number
+    totalMobilTerjual: number
     merekCount: Record<string, number>
     kategoriCount: Record<string, number>
     statusCount: Record<string, number>

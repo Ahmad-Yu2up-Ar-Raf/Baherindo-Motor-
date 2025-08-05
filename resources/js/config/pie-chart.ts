@@ -48,7 +48,30 @@ export const chartConfig = {
     label: "trail",
     color: "var(--chart-4)",
   },
-
+  toyota: {
+    label: "Toyota",
+    color: "var(--chart-1)",
+  },
+  daihatsu: {
+    label: "Daihatsu", 
+    color: "var(--chart-2)",
+  },
+  mpv: {
+    label: "MPV",
+    color: "var(--chart-1)",
+  },
+  suv: {
+    label: "SUV",
+    color: "var(--chart-2)",
+  },
+  hatchback: {
+    label: "Hatchback", 
+    color: "var(--chart-3)",
+  },
+  sedan: {
+    label: "Sedan",
+    color: "var(--chart-4)",
+  },
   other: {
     label: "Other",
     color: "var(--chart-5)",

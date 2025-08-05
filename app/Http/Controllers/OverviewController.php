@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Mobil;
 use App\Models\Motor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,10 +43,15 @@ $kategoriCount = $record->groupBy('kategori')->map(function ($group) {
   $totalMotor = Motor::where('user_id', Auth::id())->count();
   $terjualMotor = Motor::where('user_id', Auth::id())->where('status', 'terjual')->count();
 
+  $totalMobil = Mobil::where('user_id', Auth::id())->count();
+  $terjualMobil = Mobil::where('user_id', Auth::id())->where('status', 'terjual')->count();
+
           return Inertia::render('dashboard/index',[
                 'reports' => [
                     'totalMotor' => $totalMotor,
                     'totalMotorTerjual' => $terjualMotor,
+                    'totalMobil' => $totalMobil,
+                    'totalMobilTerjual' => $terjualMobil,
                     'merekCount' => $merekCount,
                     'countsHighest' => $countsHighest,
                     'statusCount' => $statusCount,

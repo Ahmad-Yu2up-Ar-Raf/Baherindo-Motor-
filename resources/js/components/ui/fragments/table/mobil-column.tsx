@@ -11,9 +11,9 @@ import { KategoriType, StatusType, MerekType } from "@/config/enum-type"
 import { formatDate } from "date-fns"
 import { Bike, CalendarIcon, Settings } from "lucide-react"
 import { Badge } from "../badge"
-import { getKategoriIcon, getMerekIcon, getStatusIcon } from "@/utils/motorcyle-utils"
+import { getKategoriIcon, getMerekIcon, getStatusIcon } from "@/utils/cars-utils"
 import { formatIDR } from "@/hooks/use-money-format"
-import { DataTableRowActions } from "../../core/table/data-table-row-action-motor"
+import { DataTableRowActions } from "../../core/table/data-table-row-action-mobil"
 import {  useKilometer } from "@/hooks/useKilometer"
 
 
@@ -22,7 +22,7 @@ import {  useKilometer } from "@/hooks/useKilometer"
 
 
   
-export const columns: ColumnDef<MotorSchema>[] = [
+export const columnsMobils: ColumnDef<MotorSchema>[] = [
  {
     id: "select",
     header: ({ table }) => (

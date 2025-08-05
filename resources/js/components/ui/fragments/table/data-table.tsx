@@ -16,7 +16,7 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table"
-import { router as inertiaRouter, usePage } from '@inertiajs/react'
+import { router as inertiaRouter, router, usePage } from '@inertiajs/react'
 
 import {
   Table,
@@ -30,8 +30,11 @@ import {
 import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
 import { Filters } from "@/types/index"
-import { Bike, BriefcaseBusiness, Building, DoorOpen, HardHat } from "lucide-react"
+import { Bike, BriefcaseBusiness, Building, CarIcon, DoorOpen, HardHat } from "lucide-react"
 import { CreateTaskSheet } from "../../core/sheet/create-motor-sheet"
+import { TasksTableActionBar } from "../../core/table/data-table-action-bar"
+import { toast } from "sonner"
+import { CreateMobilSheet } from "../../core/sheet/create-mobil-sheet"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -151,13 +154,78 @@ export function DataTable<TData, TValue>({
   })
 
   const [open, setOpen] = React.useState(false);
+  const actions = [
+    "update-status",
+  "update-merek",
+  "update-status",
+
+  "update-kategori",
+  "delete",
+  ] as const;
+
+  type Action = (typeof actions)[number];
+  const [isPending, startTransition] = React.useTransition();
+  const [currentAction, setCurrentAction] = React.useState<Action | null>(null);
+  const [lastAction, setLastAction] = React.useState<Action | null>(null);
+  const getIsActionPending = React.useCallback(
+    (action: Action) => isPending && currentAction === action,
+    [isPending, currentAction],
+  );
+
+
+
+
+
+
+  const rows = table.getFilteredSelectedRowModel().rows;
+const ids: number[] =  rows.map((row) => row.original.id);
+  const onTaskDelete = React.useCallback(() => {
+    setCurrentAction("delete");
+    toast.loading("deleting data...",  { id: "motor-delete" });
+console.log("Selected rows:", ids);
+    startTransition(async () => {
+      try {
+
+
+
+    
+        router.delete(route(`dashboard.${pathNames}.destroy`, ids) , {
+            data: { ids: ids } ,
+             preserveScroll: true,
+             preserveState: true,
+             onBefore: () => {
+               setCurrentAction(null);
+             },
+             onSuccess: () => {
+               toast.success("Motor deleted successfully",  { id: "motor-delete" });
+               router.reload(); 
+             },
+             onError: (errors: any) => {
+               console.error("Delete error:", errors);
+               toast.error(errors?.message || "Failed to delete the motor" , { id: "motor-delete" });
+             },
+             onFinish: () => {
+               setCurrentAction(null);
+             }
+           });
+      
+        table.toggleAllRowsSelected(false);
+
+
+      } catch (error) {
+        toast.error("Failed to delete items", { id: "delete" });
+        setCurrentAction(null);
+        setLastAction(null);
+      }
+    });
+  }, [rows, table]);
 
   // Handle empty state
-  if(data.length === 0 && Object.keys(filters).every(key => !filters[key] || (Array.isArray(filters[key]) && filters[key].length === 0))) {
+  if(data.length === 0) {
     return (
       <>
         <EmptyState
-          icons={[HardHat, Bike, BriefcaseBusiness]}
+          icons={[HardHat, Bike, CarIcon]}
           title={`No ${pathNames} data yet`}
           description={`Start by adding your first ${pathNames}`}
           action={{
@@ -244,7 +312,15 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       
+    
       <DataTablePagination table={table} serverPagination={serverPagination} />
+   {
+      table.getFilteredSelectedRowModel().rows.length > 0 &&
+     <TasksTableActionBar
+      onTaskDelete={onTaskDelete}
+     table={table } // Cast untuk mengatasi masalah tipe
+     getIsActionPending={getIsActionPending}
+     />}
     </div>
   )
 }
@@ -269,8 +345,14 @@ const SheetComponents = React.memo(({
       />
     );
   }
-  
-  return null;
+    
+  return (
+    <CreateMobilSheet
+    trigger={trigger} 
+    open={open} 
+    onOpenChange={onOpenChange}
+    />
+  );
 });
 
 SheetComponents.displayName = 'SheetComponents';
